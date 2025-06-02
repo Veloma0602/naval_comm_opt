@@ -1,0 +1,25 @@
+2025-04-08 14:15:47,764 - optimization - INFO - 日志系统初始化完成。日志文件: logs/optimization_20250408_141547.log
+2025-04-08 14:15:47,765 - optimization - INFO - === 开始优化任务 rw001 ===
+2025-04-08 14:15:47,765 - optimization - INFO - 连接到Neo4j数据库 bolt://localhost:7699
+2025-04-08 14:15:47,765 - data.neo4j_handler - INFO - Successfully connected to Neo4j at bolt://localhost:7699
+2025-04-08 14:15:47,803 - optimization - INFO - 执行测试查询...
+2025-04-08 14:15:48,166 - optimization - INFO - 获取任务 rw001 的数据
+2025-04-08 14:15:48,321 - neo4j.notifications - WARNING - Received notification from DBMS server: {severity: WARNING} {code: Neo.ClientNotification.Statement.FeatureDeprecationWarning} {category: DEPRECATION} {title: This feature is deprecated and will be removed in future versions.} {description: The query used a deprecated function: `id`.} {position: line: 6, column: 52, offset: 242} for query: '\n                    MATCH (t:任务 {任务编号: $task_id})\n                    MATCH (t)-[:部署单位]->(n1:节点)\n                    MATCH (n1)-[r:通信手段]->(n2:节点)\n                    WHERE (t)-[:部署单位]->(n2)\n                    RETURN r, type(r) as rel_type, id(n1) as start_id, id(n2) as end_id\n                    '
+2025-04-08 14:15:48,322 - neo4j.notifications - WARNING - Received notification from DBMS server: {severity: WARNING} {code: Neo.ClientNotification.Statement.FeatureDeprecationWarning} {category: DEPRECATION} {title: This feature is deprecated and will be removed in future versions.} {description: The query used a deprecated function: `id`.} {position: line: 6, column: 72, offset: 262} for query: '\n                    MATCH (t:任务 {任务编号: $task_id})\n                    MATCH (t)-[:部署单位]->(n1:节点)\n                    MATCH (n1)-[r:通信手段]->(n2:节点)\n                    WHERE (t)-[:部署单位]->(n2)\n                    RETURN r, type(r) as rel_type, id(n1) as start_id, id(n2) as end_id\n                    '
+2025-04-08 14:15:48,323 - data.neo4j_handler - INFO - Retrieved task data for rw001: 6 links
+2025-04-08 14:15:48,323 - optimization - INFO - 获取任务 rw001 的环境数据
+2025-04-08 14:15:48,368 - data.neo4j_handler - INFO - Retrieved environment data for rw001
+2025-04-08 14:15:48,368 - optimization - INFO - 获取任务 rw001 的约束数据
+2025-04-08 14:15:48,408 - data.neo4j_handler - INFO - Retrieved constraint data for rw001
+2025-04-08 14:15:48,408 - optimization - INFO - 优化配置: 种群大小=100, 迭代代数=200
+2025-04-08 14:15:48,408 - optimization - INFO - 初始化优化器
+2025-04-08 14:15:48,409 - data.neo4j_handler - INFO - Neo4j connection closed
+2025-04-08 14:15:48,409 - optimization - ERROR - 优化过程中发生错误: No module named 'models.objectives'
+2025-04-08 14:15:48,410 - optimization - ERROR - Traceback (most recent call last):
+  File "main.py", line 88, in main
+    optimizer = CommunicationOptimizer(
+  File "/home/fangwentao/naval_comm_opt/src/optimization/nsga2_optimizer.py", line 161, in __init__
+    from models.objectives import ObjectiveFunction
+ModuleNotFoundError: No module named 'models.objectives'
+
+2025-04-08 14:15:48,410 - optimization - INFO - === 优化任务结束 ===

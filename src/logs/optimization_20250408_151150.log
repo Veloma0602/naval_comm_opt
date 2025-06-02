@@ -1,0 +1,37 @@
+2025-04-08 15:11:50,287 - optimization - INFO - 日志系统初始化完成。日志文件: logs/optimization_20250408_151150.log
+2025-04-08 15:11:50,289 - optimization - INFO - === 开始优化任务 rw001 ===
+2025-04-08 15:11:50,289 - optimization - INFO - 连接到Neo4j数据库 bolt://localhost:7699
+2025-04-08 15:11:50,289 - data.neo4j_handler - INFO - Successfully connected to Neo4j at bolt://localhost:7699
+2025-04-08 15:11:50,305 - optimization - INFO - 执行测试查询...
+2025-04-08 15:11:50,316 - optimization - INFO - 获取任务 rw001 的数据
+2025-04-08 15:11:50,325 - neo4j.notifications - WARNING - Received notification from DBMS server: {severity: WARNING} {code: Neo.ClientNotification.Statement.FeatureDeprecationWarning} {category: DEPRECATION} {title: This feature is deprecated and will be removed in future versions.} {description: The query used a deprecated function: `id`.} {position: line: 6, column: 52, offset: 242} for query: '\n                    MATCH (t:任务 {任务编号: $task_id})\n                    MATCH (t)-[:部署单位]->(n1:节点)\n                    MATCH (n1)-[r:通信手段]->(n2:节点)\n                    WHERE (t)-[:部署单位]->(n2)\n                    RETURN r, type(r) as rel_type, id(n1) as start_id, id(n2) as end_id\n                    '
+2025-04-08 15:11:50,325 - neo4j.notifications - WARNING - Received notification from DBMS server: {severity: WARNING} {code: Neo.ClientNotification.Statement.FeatureDeprecationWarning} {category: DEPRECATION} {title: This feature is deprecated and will be removed in future versions.} {description: The query used a deprecated function: `id`.} {position: line: 6, column: 72, offset: 262} for query: '\n                    MATCH (t:任务 {任务编号: $task_id})\n                    MATCH (t)-[:部署单位]->(n1:节点)\n                    MATCH (n1)-[r:通信手段]->(n2:节点)\n                    WHERE (t)-[:部署单位]->(n2)\n                    RETURN r, type(r) as rel_type, id(n1) as start_id, id(n2) as end_id\n                    '
+2025-04-08 15:11:50,325 - data.neo4j_handler - INFO - Retrieved task data for rw001: 6 links
+2025-04-08 15:11:50,325 - optimization - INFO - 获取任务 rw001 的环境数据
+2025-04-08 15:11:50,328 - data.neo4j_handler - INFO - Retrieved environment data for rw001
+2025-04-08 15:11:50,328 - optimization - INFO - 获取任务 rw001 的约束数据
+2025-04-08 15:11:50,330 - data.neo4j_handler - INFO - Retrieved constraint data for rw001
+2025-04-08 15:11:50,330 - optimization - INFO - 优化配置: 种群大小=100, 迭代代数=200
+2025-04-08 15:11:50,330 - optimization - INFO - 初始化优化器
+2025-04-08 15:11:50,330 - data.neo4j_handler - INFO - Neo4j connection closed
+2025-04-08 15:11:50,332 - optimization - INFO - 正在执行优化方法对比
+2025-04-08 15:11:50,332 - data.neo4j_handler - INFO - Successfully connected to Neo4j at bolt://localhost:7699
+2025-04-08 15:11:50,344 - data.neo4j_handler - INFO - Found 10 similar cases for task rw001
+2025-04-08 15:11:50,353 - data.neo4j_handler - INFO - Retrieved 6 communication links for task rw198
+2025-04-08 15:11:50,360 - data.neo4j_handler - INFO - Retrieved 6 communication links for task rw262
+2025-04-08 15:11:50,367 - data.neo4j_handler - INFO - Retrieved 6 communication links for task rw146
+2025-04-08 15:11:50,373 - data.neo4j_handler - INFO - Retrieved 6 communication links for task rw171
+2025-04-08 15:11:50,381 - data.neo4j_handler - INFO - Retrieved 8 communication links for task rw223
+2025-04-08 15:11:50,390 - data.neo4j_handler - INFO - Retrieved 14 communication links for task rw244
+2025-04-08 15:11:50,397 - data.neo4j_handler - INFO - Retrieved 6 communication links for task rw051
+2025-04-08 15:11:50,403 - data.neo4j_handler - INFO - Retrieved 6 communication links for task rw053
+2025-04-08 15:11:50,410 - data.neo4j_handler - INFO - Retrieved 11 communication links for task rw157
+2025-04-08 15:11:50,418 - data.neo4j_handler - INFO - Retrieved 6 communication links for task rw295
+2025-04-08 15:12:49,065 - optimization - INFO - 对比完成，结果已保存到 results/rw001_method_comparison.json
+2025-04-08 15:12:49,065 - optimization - ERROR - 优化过程中发生错误: local variable 'pareto_front' referenced before assignment
+2025-04-08 15:12:49,065 - optimization - ERROR - Traceback (most recent call last):
+  File "main.py", line 106, in main
+    n_solutions = len(pareto_front)
+UnboundLocalError: local variable 'pareto_front' referenced before assignment
+
+2025-04-08 15:12:49,065 - optimization - INFO - === 优化任务结束 ===

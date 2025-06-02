@@ -1,0 +1,47 @@
+2025-04-08 14:08:07,752 - optimization - INFO - 日志系统初始化完成。日志文件: logs/optimization_20250408_140807.log
+2025-04-08 14:08:07,754 - optimization - INFO - === 开始优化任务 rw003 ===
+2025-04-08 14:08:07,754 - optimization - INFO - 连接到Neo4j数据库 bolt://localhost:7687
+2025-04-08 14:08:07,754 - data.neo4j_handler - INFO - Successfully connected to Neo4j at bolt://localhost:7687
+2025-04-08 14:08:07,766 - data.neo4j_handler - ERROR - Failed to connect to Neo4j: 'NoneType' object has no attribute 'on_neo4j_error'
+2025-04-08 14:08:07,766 - optimization - ERROR - 优化过程中发生错误: 'NoneType' object has no attribute 'on_neo4j_error'
+2025-04-08 14:08:07,861 - optimization - ERROR - Traceback (most recent call last):
+  File "/home/fangwentao/miniconda/envs/naval_comm/lib/python3.8/site-packages/neo4j/_sync/io/_bolt3.py", line 549, in _process_message
+    response.on_failure(summary_metadata or {})
+  File "/home/fangwentao/miniconda/envs/naval_comm/lib/python3.8/site-packages/neo4j/_sync/io/_common.py", line 274, in on_failure
+    raise Neo4jError.hydrate(**metadata)
+neo4j.exceptions.AuthError: {code: Neo.ClientError.Security.Unauthorized} {message: The client is unauthorized due to authentication failure.}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "main.py", line 43, in main
+    neo4j_handler = Neo4jHandler(
+  File "/home/fangwentao/naval_comm_opt/src/data/neo4j_handler.py", line 25, in __init__
+    result = session.run("RETURN 1 as test")
+  File "/home/fangwentao/miniconda/envs/naval_comm/lib/python3.8/site-packages/neo4j/_sync/work/session.py", line 306, in run
+    self._connect(self._config.default_access_mode)
+  File "/home/fangwentao/miniconda/envs/naval_comm/lib/python3.8/site-packages/neo4j/_sync/work/session.py", line 130, in _connect
+    super()._connect(
+  File "/home/fangwentao/miniconda/envs/naval_comm/lib/python3.8/site-packages/neo4j/_sync/work/workspace.py", line 184, in _connect
+    self._connection = self._pool.acquire(**acquire_kwargs_)
+  File "/home/fangwentao/miniconda/envs/naval_comm/lib/python3.8/site-packages/neo4j/_sync/io/_pool.py", line 596, in acquire
+    return self._acquire(
+  File "/home/fangwentao/miniconda/envs/naval_comm/lib/python3.8/site-packages/neo4j/_sync/io/_pool.py", line 346, in _acquire
+    return connection_creator()
+  File "/home/fangwentao/miniconda/envs/naval_comm/lib/python3.8/site-packages/neo4j/_sync/io/_pool.py", line 169, in connection_creator
+    connection = self.opener(
+  File "/home/fangwentao/miniconda/envs/naval_comm/lib/python3.8/site-packages/neo4j/_sync/io/_pool.py", line 559, in opener
+    return Bolt.open(
+  File "/home/fangwentao/miniconda/envs/naval_comm/lib/python3.8/site-packages/neo4j/_sync/io/_bolt.py", line 553, in open
+    connection.hello()
+  File "/home/fangwentao/miniconda/envs/naval_comm/lib/python3.8/site-packages/neo4j/_sync/io/_bolt3.py", line 236, in hello
+    self.fetch_all()
+  File "/home/fangwentao/miniconda/envs/naval_comm/lib/python3.8/site-packages/neo4j/_sync/io/_bolt.py", line 992, in fetch_all
+    detail_delta, summary_delta = self.fetch_message()
+  File "/home/fangwentao/miniconda/envs/naval_comm/lib/python3.8/site-packages/neo4j/_sync/io/_bolt.py", line 977, in fetch_message
+    res = self._process_message(tag, fields)
+  File "/home/fangwentao/miniconda/envs/naval_comm/lib/python3.8/site-packages/neo4j/_sync/io/_bolt3.py", line 562, in _process_message
+    self.pool.on_neo4j_error(e, self)
+AttributeError: 'NoneType' object has no attribute 'on_neo4j_error'
+
+2025-04-08 14:08:07,862 - optimization - INFO - === 优化任务结束 ===

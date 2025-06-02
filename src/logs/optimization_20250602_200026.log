@@ -1,0 +1,2 @@
+2025-06-02 20:00:26,367 - optimization - INFO - 日志系统初始化完成。日志文件: logs/optimization_20250602_200026.log
+2025-06-02 20:00:26,408 - optimization - ERROR - 数据加载失败：_load_and_validate_data() takes 1 positional argument but 4 were given

@@ -1,0 +1,2 @@
+2025-06-02 19:58:23,620 - optimization - INFO - 日志系统初始化完成。日志文件: logs/optimization_20250602_195823.log
+2025-06-02 19:58:23,665 - optimization - ERROR - 数据加载失败：name 'neo4j_handler' is not defined

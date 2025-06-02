@@ -1,0 +1,28 @@
+2025-04-08 16:13:09,570 - optimization - INFO - 日志系统初始化完成。日志文件: logs/optimization_20250408_161309.log
+2025-04-08 16:13:09,571 - optimization - INFO - === 开始优化任务 rw001 ===
+2025-04-08 16:13:09,571 - optimization - INFO - 连接到Neo4j数据库 bolt://localhost:7699
+2025-04-08 16:13:09,572 - data.neo4j_handler - INFO - Successfully connected to Neo4j at bolt://localhost:7699
+2025-04-08 16:13:09,582 - optimization - INFO - 执行测试查询...
+2025-04-08 16:13:09,595 - optimization - INFO - 获取任务 rw001 的数据
+2025-04-08 16:13:09,605 - neo4j.notifications - WARNING - Received notification from DBMS server: {severity: WARNING} {code: Neo.ClientNotification.Statement.FeatureDeprecationWarning} {category: DEPRECATION} {title: This feature is deprecated and will be removed in future versions.} {description: The query used a deprecated function: `id`.} {position: line: 6, column: 52, offset: 242} for query: '\n                    MATCH (t:任务 {任务编号: $task_id})\n                    MATCH (t)-[:部署单位]->(n1:节点)\n                    MATCH (n1)-[r:通信手段]->(n2:节点)\n                    WHERE (t)-[:部署单位]->(n2)\n                    RETURN r, type(r) as rel_type, id(n1) as start_id, id(n2) as end_id\n                    '
+2025-04-08 16:13:09,605 - neo4j.notifications - WARNING - Received notification from DBMS server: {severity: WARNING} {code: Neo.ClientNotification.Statement.FeatureDeprecationWarning} {category: DEPRECATION} {title: This feature is deprecated and will be removed in future versions.} {description: The query used a deprecated function: `id`.} {position: line: 6, column: 72, offset: 262} for query: '\n                    MATCH (t:任务 {任务编号: $task_id})\n                    MATCH (t)-[:部署单位]->(n1:节点)\n                    MATCH (n1)-[r:通信手段]->(n2:节点)\n                    WHERE (t)-[:部署单位]->(n2)\n                    RETURN r, type(r) as rel_type, id(n1) as start_id, id(n2) as end_id\n                    '
+2025-04-08 16:13:09,606 - data.neo4j_handler - INFO - Retrieved task data for rw001: 6 links
+2025-04-08 16:13:09,606 - optimization - INFO - 获取任务 rw001 的环境数据
+2025-04-08 16:13:09,608 - data.neo4j_handler - INFO - Retrieved environment data for rw001
+2025-04-08 16:13:09,609 - optimization - INFO - 获取任务 rw001 的约束数据
+2025-04-08 16:13:09,611 - data.neo4j_handler - INFO - Retrieved constraint data for rw001
+2025-04-08 16:13:09,611 - optimization - INFO - 优化配置: 种群大小=100, 迭代代数=200
+2025-04-08 16:13:09,611 - optimization - INFO - 初始化优化器
+2025-04-08 16:13:09,611 - data.neo4j_handler - INFO - Neo4j connection closed
+2025-04-08 16:13:09,612 - optimization - INFO - 开始运行NSGA-II优化
+2025-04-08 16:13:09,613 - data.neo4j_handler - INFO - Successfully connected to Neo4j at bolt://localhost:7699
+2025-04-08 16:13:09,710 - data.neo4j_handler - INFO - 找到 4 个相似案例，基于环境和约束相似度
+2025-04-08 16:13:09,722 - data.neo4j_handler - INFO - 相似案例详情: rw223(极地D1区域,2艘驱逐舰,2艘护卫舰,1艘补给舰), rw157(极地D1区域,3艘驱逐舰,2艘护卫舰,1艘两栖舰), rw337(极地D1区域,1艘航母,3艘驱逐舰,1艘护卫舰,1艘补给舰)
+2025-04-08 16:13:37,393 - optimization - INFO - 优化完成，得到 100 个非支配解
+2025-04-08 16:13:37,400 - optimization - INFO - 生成结果可视化...
+2025-04-08 16:13:48,196 - optimization - INFO - 保存优化结果到Neo4j数据库
+2025-04-08 16:13:48,637 - data.neo4j_handler - INFO - Saved 100 optimization results for task rw001
+2025-04-08 16:13:48,643 - optimization - INFO - 详细结果已保存到 results/rw001_results.json
+2025-04-08 16:13:48,643 - data.neo4j_handler - INFO - Neo4j connection closed
+2025-04-08 16:13:48,643 - optimization - INFO - 优化完成，耗时: 39.07秒
+2025-04-08 16:13:48,643 - optimization - INFO - === 优化任务结束 ===

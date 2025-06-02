@@ -1,0 +1,51 @@
+=== 任务 rw001 优化结果报告 ===
+
+找到 1 个非支配解
+
+解 1:
+  加权得分: -100000.0
+  目标函数值:
+    reliability: -100000.0
+    spectral_efficiency: -100000.0
+    energy_efficiency: 100000.0
+    interference: -100000.0
+    adaptability: -100000.0
+  参数配置:
+    链路 1:
+      frequency: 5050000000.0
+      bandwidth: 27500000.0
+      power: 27.5
+      modulation: BPSK
+      polarization: LINEAR
+    链路 2:
+      frequency: 5050000000.0
+      bandwidth: 27500000.0
+      power: 27.5
+      modulation: BPSK
+      polarization: LINEAR
+    链路 3:
+      frequency: 5050000000.0
+      bandwidth: 27500000.0
+      power: 27.5
+      modulation: BPSK
+      polarization: LINEAR
+    链路 4:
+      frequency: 5050000000.0
+      bandwidth: 27500000.0
+      power: 27.5
+      modulation: QAM16
+      polarization: DUAL
+    链路 5:
+      frequency: 5050000000.0
+      bandwidth: 27500000.0
+      power: 27.5
+      modulation: QAM16
+      polarization: DUAL
+    链路 6:
+      frequency: 5050000000.0
+      bandwidth: 27500000.0
+      power: 27.5
+      modulation: QAM16
+      polarization: DUAL
+
+=== 报告结束 ===

@@ -1,0 +1,41 @@
+{
+  "task_id": "rw001",
+  "optimization_config": {
+    "population_size": 150,
+    "n_generations": 300,
+    "mutation_prob": 0.2,
+    "crossover_prob": 0.9,
+    "freq_min": 100000000.0,
+    "freq_max": 10000000000.0,
+    "power_min": 5.0,
+    "power_max": 50.0,
+    "bandwidth_min": 5000000.0,
+    "bandwidth_max": 50000000.0,
+    "snr_min": 10.0,
+    "delay_max": 100.0,
+    "min_freq_separation": 3000000.0,
+    "objective_weights": {
+      "reliability": 0.25,
+      "spectral": 0.25,
+      "energy": 0.2,
+      "interference": 0.15,
+      "adaptability": 0.15
+    },
+    "use_historical_cases": true,
+    "max_historical_cases": 10,
+    "historical_ratio": 0.3
+  },
+  "results": [
+    {
+      "objectives": {
+        "reliability": -100000.0,
+        "spectral_efficiency": -100000.0,
+        "energy_efficiency": 100000.0,
+        "interference": -100000.0,
+        "adaptability": -100000.0
+      },
+      "weighted_objective": -100000.0
+    }
+  ],
+  "execution_time": 37.8827486038208
+}

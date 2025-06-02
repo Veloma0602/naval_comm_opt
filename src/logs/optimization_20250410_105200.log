@@ -1,0 +1,32 @@
+2025-04-10 10:52:00,499 - optimization - INFO - 日志系统初始化完成。日志文件: logs/optimization_20250410_105200.log
+2025-04-10 10:52:00,500 - optimization - INFO - === 开始优化任务 rw001 ===
+2025-04-10 10:52:00,501 - optimization - INFO - 连接到Neo4j数据库 bolt://localhost:7699
+2025-04-10 10:52:00,501 - data.neo4j_handler - INFO - Successfully connected to Neo4j at bolt://localhost:7699
+2025-04-10 10:52:00,545 - optimization - INFO - 执行测试查询...
+2025-04-10 10:52:00,788 - optimization - INFO - 获取任务 rw001 的数据
+2025-04-10 10:52:00,899 - neo4j.notifications - WARNING - Received notification from DBMS server: {severity: WARNING} {code: Neo.ClientNotification.Statement.FeatureDeprecationWarning} {category: DEPRECATION} {title: This feature is deprecated and will be removed in future versions.} {description: The query used a deprecated function: `id`.} {position: line: 6, column: 52, offset: 242} for query: '\n                    MATCH (t:任务 {任务编号: $task_id})\n                    MATCH (t)-[:部署单位]->(n1:节点)\n                    MATCH (n1)-[r:通信手段]->(n2:节点)\n                    WHERE (t)-[:部署单位]->(n2)\n                    RETURN r, type(r) as rel_type, id(n1) as start_id, id(n2) as end_id\n                    '
+2025-04-10 10:52:00,900 - neo4j.notifications - WARNING - Received notification from DBMS server: {severity: WARNING} {code: Neo.ClientNotification.Statement.FeatureDeprecationWarning} {category: DEPRECATION} {title: This feature is deprecated and will be removed in future versions.} {description: The query used a deprecated function: `id`.} {position: line: 6, column: 72, offset: 262} for query: '\n                    MATCH (t:任务 {任务编号: $task_id})\n                    MATCH (t)-[:部署单位]->(n1:节点)\n                    MATCH (n1)-[r:通信手段]->(n2:节点)\n                    WHERE (t)-[:部署单位]->(n2)\n                    RETURN r, type(r) as rel_type, id(n1) as start_id, id(n2) as end_id\n                    '
+2025-04-10 10:52:00,905 - data.neo4j_handler - INFO - Retrieved task data for rw001: 6 links
+2025-04-10 10:52:00,908 - optimization - INFO - 获取任务 rw001 的环境数据
+2025-04-10 10:52:00,936 - data.neo4j_handler - INFO - Retrieved environment data for rw001
+2025-04-10 10:52:00,936 - optimization - INFO - 获取任务 rw001 的约束数据
+2025-04-10 10:52:00,961 - data.neo4j_handler - INFO - Retrieved constraint data for rw001
+2025-04-10 10:52:00,961 - optimization - INFO - 优化配置: 种群大小=150, 迭代代数=300
+2025-04-10 10:52:00,962 - optimization - INFO - 初始化优化器
+2025-04-10 10:52:00,962 - data.neo4j_handler - INFO - Neo4j connection closed
+2025-04-10 10:52:00,963 - optimization - INFO - 开始运行NSGA-II优化
+2025-04-10 10:52:00,963 - data.neo4j_handler - INFO - Successfully connected to Neo4j at bolt://localhost:7699
+2025-04-10 10:53:12,012 - optimization - INFO - 优化完成，得到 1 个非支配解
+2025-04-10 10:53:12,013 - optimization - INFO - 生成结果可视化...
+2025-04-10 10:53:16,288 - optimization - INFO - 保存优化结果到Neo4j数据库
+2025-04-10 10:53:16,394 - data.neo4j_handler - INFO - Saved 1 optimization results for task rw001
+2025-04-10 10:53:16,396 - optimization - ERROR - 优化过程中发生错误: 'OptimizationConfig' object has no attribute 'snr_min'
+2025-04-10 10:53:16,397 - optimization - ERROR - Traceback (most recent call last):
+  File "main.py", line 151, in main
+    'optimization_config': config.to_dict(),
+  File "/home/fangwentao/naval_comm_opt/src/config/parameters.py", line 144, in to_dict
+    "snr_min": self.snr_min,
+AttributeError: 'OptimizationConfig' object has no attribute 'snr_min'
+
+2025-04-10 10:53:16,398 - optimization - INFO - === 优化任务结束 ===
+2025-04-10 10:53:16,458 - neo4j.io - ERROR - Failed to write data to connection IPv4Address(('localhost', 7699)) (ResolvedIPv4Address(('127.0.0.1', 7699)))

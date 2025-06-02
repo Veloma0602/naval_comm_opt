@@ -1,0 +1,1031 @@
+{
+  "task_id": "rw003",
+  "optimization_config": {
+    "population_size": 100,
+    "n_generations": 200,
+    "mutation_prob": 0.1,
+    "crossover_prob": 0.9,
+    "freq_min": 100000000.0,
+    "freq_max": 10000000000.0,
+    "power_min": 5.0,
+    "power_max": 50,
+    "bandwidth_min": 5000000.0,
+    "bandwidth_max": 50000000.0,
+    "snr_min": 10,
+    "delay_max": 100,
+    "min_freq_separation": 5000000.0,
+    "objective_weights": {
+      "reliability": 0.3,
+      "spectral": 0.2,
+      "energy": 0.2,
+      "interference": 0.15,
+      "adaptability": 0.15
+    },
+    "use_historical_cases": true,
+    "max_historical_cases": 20,
+    "historical_ratio": 0.4
+  },
+  "results": [
+    {
+      "objectives": {
+        "reliability": 4.9456358272856225,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 88.51160435172656,
+        "interference": -21.799111111111454,
+        "adaptability": 4.509315068692321
+      },
+      "weighted_objective": -17.692099528522498
+    },
+    {
+      "objectives": {
+        "reliability": 5.007956098736182,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 88.44947187762246,
+        "interference": -22.039111111110763,
+        "adaptability": 4.468823434463998
+      },
+      "weighted_objective": -17.703050697400652
+    },
+    {
+      "objectives": {
+        "reliability": 5.337743240088223,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 89.41391355213744,
+        "interference": -21.639111111111085,
+        "adaptability": 4.49506232070314
+      },
+      "weighted_objective": -17.733067056962213
+    },
+    {
+      "objectives": {
+        "reliability": 5.3546731876365765,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 89.44780570751124,
+        "interference": -21.639111111111127,
+        "adaptability": 4.497451283659681
+      },
+      "weighted_objective": -17.734408159328993
+    },
+    {
+      "objectives": {
+        "reliability": 5.062155343178263,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 88.81296579557579,
+        "interference": -22.039111111111332,
+        "adaptability": 4.533036227090978
+      },
+      "weighted_objective": -17.749857788764732
+    },
+    {
+      "objectives": {
+        "reliability": 5.0935163903643215,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 89.0285196492465,
+        "interference": -21.839111111111354,
+        "adaptability": 4.475348382700571
+      },
+      "weighted_objective": -17.762213422001626
+    },
+    {
+      "objectives": {
+        "reliability": 5.189921311192265,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 89.37147089321579,
+        "interference": -21.63911111111088,
+        "adaptability": 4.484793504571622
+      },
+      "weighted_objective": -17.770465426266366
+    },
+    {
+      "objectives": {
+        "reliability": 4.7732675069214885,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 88.71742577108706,
+        "interference": -21.759111111109437,
+        "adaptability": 4.55114732989931
+      },
+      "weighted_objective": -17.772699469322486
+    },
+    {
+      "objectives": {
+        "reliability": 4.90984901560987,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 88.8959606634724,
+        "interference": -21.839111111110075,
+        "adaptability": 4.513319523044773
+      },
+      "weighted_objective": -17.785106166221315
+    },
+    {
+      "objectives": {
+        "reliability": 5.184695174730003,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 89.19010439777712,
+        "interference": -22.039111111110905,
+        "adaptability": 4.483225432644615
+      },
+      "weighted_objective": -17.795995178906367
+    },
+    {
+      "objectives": {
+        "reliability": 5.103121670278359,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 89.11923350887213,
+        "interference": -22.039111111111332,
+        "adaptability": 4.536314017704299
+      },
+      "weighted_objective": -17.798329764701972
+    },
+    {
+      "objectives": {
+        "reliability": 5.1255305314233315,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 89.25196704121488,
+        "interference": -21.99911111111112,
+        "adaptability": 4.523715068692321
+      },
+      "weighted_objective": -17.814043655178796
+    },
+    {
+      "objectives": {
+        "reliability": 4.812524184460528,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 88.71742577108706,
+        "interference": -22.199111111111808,
+        "adaptability": 4.5711473298993095
+      },
+      "weighted_objective": -17.82392246606113
+    },
+    {
+      "objectives": {
+        "reliability": 4.983592299024741,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 89.34495794812467,
+        "interference": -21.799111111111852,
+        "adaptability": 4.524599544139558
+      },
+      "weighted_objective": -17.84509063496336
+    },
+    {
+      "objectives": {
+        "reliability": 5.384706098092892,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 90.11183358270411,
+        "interference": -21.63911111111112,
+        "adaptability": 4.499193504571622
+      },
+      "weighted_objective": -17.85794252809388
+    },
+    {
+      "objectives": {
+        "reliability": 5.073902198345239,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 88.94086616522958,
+        "interference": -22.639111111111333,
+        "adaptability": 4.534134153321085
+      },
+      "weighted_objective": -17.861749117210884
+    },
+    {
+      "objectives": {
+        "reliability": 5.694246651618812,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 90.40626095181317,
+        "interference": -22.03911111111124,
+        "adaptability": 4.583559929003721
+      },
+      "weighted_objective": -17.871310872193117
+    },
+    {
+      "objectives": {
+        "reliability": 5.453045310476728,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 90.3831833832011,
+        "interference": -21.59911111111242,
+        "adaptability": 4.561918044416992
+      },
+      "weighted_objective": -17.876302043501514
+    },
+    {
+      "objectives": {
+        "reliability": 4.863128037277299,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 88.44730731047053,
+        "interference": -23.15911111111126,
+        "adaptability": 4.608807440761558
+      },
+      "weighted_objective": -17.893068601463373
+    },
+    {
+      "objectives": {
+        "reliability": 5.357887648966276,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 89.44119847064167,
+        "interference": -22.83911111111082,
+        "adaptability": 4.557160419427561
+      },
+      "weighted_objective": -17.90316600319094
+    },
+    {
+      "objectives": {
+        "reliability": 5.368933442865732,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 89.79872650330613,
+        "interference": -22.439111111111117,
+        "adaptability": 4.598074786087656
+      },
+      "weighted_objective": -17.905220716555025
+    },
+    {
+      "objectives": {
+        "reliability": 4.983028596921262,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 89.43306662171852,
+        "interference": -22.19911111111242,
+        "adaptability": 4.585603516967145
+      },
+      "weighted_objective": -17.91373088438912
+    },
+    {
+      "objectives": {
+        "reliability": 5.1340978040635274,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 90.20486448215175,
+        "interference": -21.559111111109438,
+        "adaptability": 4.5800137536706735
+      },
+      "weighted_objective": -17.927608158827105
+    },
+    {
+      "objectives": {
+        "reliability": 4.6975606183178495,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 88.45923722521303,
+        "interference": -23.159111111109546,
+        "adaptability": 4.668896612025695
+      },
+      "weighted_objective": -17.93611143440983
+    },
+    {
+      "objectives": {
+        "reliability": 5.527237613043365,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 90.16388848072275,
+        "interference": -22.439111111111103,
+        "adaptability": 4.510302212929741
+      },
+      "weighted_objective": -17.943927746958746
+    },
+    {
+      "objectives": {
+        "reliability": 5.035192842491908,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 88.69292124410302,
+        "interference": -23.503262656535377,
+        "adaptability": 4.47124075319939
+      },
+      "weighted_objective": -17.96282968157343
+    },
+    {
+      "objectives": {
+        "reliability": 4.952887204865178,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 88.64345925297819,
+        "interference": -23.599111111111412,
+        "adaptability": 4.630458110963286
+      },
+      "weighted_objective": -17.968123639158303
+    },
+    {
+      "objectives": {
+        "reliability": 4.890815855434075,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 89.19937233591075,
+        "interference": -22.959111111110015,
+        "adaptability": 4.623294955470547
+      },
+      "weighted_objective": -18.003002133897848
+    },
+    {
+      "objectives": {
+        "reliability": 5.24997946767893,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 89.88608848486888,
+        "interference": -22.959111111110925,
+        "adaptability": 4.761902539636223
+      },
+      "weighted_objective": -18.011805142391303
+    },
+    {
+      "objectives": {
+        "reliability": 5.299025433161568,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 90.0027447371523,
+        "interference": -22.799111111111102,
+        "adaptability": 4.658193366153807
+      },
+      "weighted_objective": -18.011978979225585
+    },
+    {
+      "objectives": {
+        "reliability": 6.016119761125541,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 91.84215642216333,
+        "interference": -21.839111111111404,
+        "adaptability": 4.549362862458346
+      },
+      "weighted_objective": -18.037057593392962
+    },
+    {
+      "objectives": {
+        "reliability": 5.244591692714139,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 90.72988047727755,
+        "interference": -21.959111111109436,
+        "adaptability": 4.652487861702544
+      },
+      "weighted_objective": -18.0485920750523
+    },
+    {
+      "objectives": {
+        "reliability": 5.656636723021285,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 91.48025634882643,
+        "interference": -21.759111111111427,
+        "adaptability": 4.612234941794887
+      },
+      "weighted_objective": -18.051091678256384
+    },
+    {
+      "objectives": {
+        "reliability": 5.49690388001642,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 91.28134864715908,
+        "interference": -21.759111111109437,
+        "adaptability": 4.6090877807977835
+      },
+      "weighted_objective": -18.05970206497364
+    },
+    {
+      "objectives": {
+        "reliability": 4.986652593381414,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 89.49866552629592,
+        "interference": -23.199111111110618,
+        "adaptability": 4.646001444874023
+      },
+      "weighted_objective": -18.06670377718025
+    },
+    {
+      "objectives": {
+        "reliability": 4.73072157925527,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 88.7583028368076,
+        "interference": -23.75911111111062,
+        "adaptability": 4.671601444874022
+      },
+      "weighted_objective": -18.07557054352043
+    },
+    {
+      "objectives": {
+        "reliability": 4.964542174124267,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 89.72768993832773,
+        "interference": -22.959111111110875,
+        "adaptability": 4.689880135402699
+      },
+      "weighted_objective": -18.07655998178449
+    },
+    {
+      "objectives": {
+        "reliability": 5.402170060424292,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 90.24096609910353,
+        "interference": -23.03911111111121,
+        "adaptability": 4.560936876522026
+      },
+      "weighted_objective": -18.0792683368818
+    },
+    {
+      "objectives": {
+        "reliability": 5.188387563769002,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 89.2807786463335,
+        "interference": -24.039111111111435,
+        "adaptability": 4.663963033930848
+      },
+      "weighted_objective": -18.085911671713085
+    },
+    {
+      "objectives": {
+        "reliability": 5.392992522332386,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 90.21971384601197,
+        "interference": -23.239111111111452,
+        "adaptability": 4.62062731437717
+      },
+      "weighted_objective": -18.09881758201282
+    },
+    {
+      "objectives": {
+        "reliability": 5.052806875778057,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 88.81832841989355,
+        "interference": -24.467746374890844,
+        "adaptability": 4.592307496925967
+      },
+      "weighted_objective": -18.109139452940028
+    },
+    {
+      "objectives": {
+        "reliability": 5.804530119452783,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 91.86390876217774,
+        "interference": -21.99911111111242,
+        "adaptability": 4.650718044416992
+      },
+      "weighted_objective": -18.113681676604028
+    },
+    {
+      "objectives": {
+        "reliability": 5.2879722683236805,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 90.48156438224218,
+        "interference": -22.959111111110783,
+        "adaptability": 4.7633367048749395
+      },
+      "weighted_objective": -18.11928735688671
+    },
+    {
+      "objectives": {
+        "reliability": 5.48218508316263,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 90.13888057773823,
+        "interference": -23.670828069057322,
+        "adaptability": 4.627137661723327
+      },
+      "weighted_objective": -18.11967415169896
+    },
+    {
+      "objectives": {
+        "reliability": 5.055309138431456,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 89.40109111841743,
+        "interference": -23.959111111111103,
+        "adaptability": 4.745037952080286
+      },
+      "weighted_objective": -18.12573645600867
+    },
+    {
+      "objectives": {
+        "reliability": 4.73072157925527,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 88.7583028368076,
+        "interference": -24.15911111111062,
+        "adaptability": 4.7316014448740225
+      },
+      "weighted_objective": -18.126570543520433
+    },
+    {
+      "objectives": {
+        "reliability": 4.824171232422559,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 88.87167199119784,
+        "interference": -24.199111111111044,
+        "adaptability": 4.69285837880677
+      },
+      "weighted_objective": -18.133020938358445
+    },
+    {
+      "objectives": {
+        "reliability": 5.324551269566871,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 90.65604896286649,
+        "interference": -22.95911111111135,
+        "adaptability": 4.766222275231385
+      },
+      "weighted_objective": -18.14277773708523
+    },
+    {
+      "objectives": {
+        "reliability": 5.830163835593993,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 91.1087830654739,
+        "interference": -23.307126274396147,
+        "adaptability": 4.655512062872722
+      },
+      "weighted_objective": -18.150449594145094
+    },
+    {
+      "objectives": {
+        "reliability": 5.172640279322013,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 90.59573810693746,
+        "interference": -22.759111111109434,
+        "adaptability": 4.706188194118304
+      },
+      "weighted_objective": -18.15529397513956
+    },
+    {
+      "objectives": {
+        "reliability": 5.545321742147325,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 91.61270569998777,
+        "interference": -22.159111111110487,
+        "adaptability": 4.716595590164115
+      },
+      "weighted_objective": -18.155321945495313
+    },
+    {
+      "objectives": {
+        "reliability": 5.858280414126931,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 91.7362275621516,
+        "interference": -22.59911111111082,
+        "adaptability": 4.643005148094379
+      },
+      "weighted_objective": -18.163177282644707
+    },
+    {
+      "objectives": {
+        "reliability": 5.5708305084678305,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 90.35212819258676,
+        "interference": -23.99911111111115,
+        "adaptability": 4.720007454887237
+      },
+      "weighted_objective": -18.17104203441059
+    },
+    {
+      "objectives": {
+        "reliability": 5.835874453518581,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 92.22061903831475,
+        "interference": -21.959111111111106,
+        "adaptability": 4.6266349417948875
+      },
+      "weighted_objective": -18.173232897004812
+    },
+    {
+      "objectives": {
+        "reliability": 5.646778678632591,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 91.3644130958381,
+        "interference": -22.959111111111103,
+        "adaptability": 4.791943714121126
+      },
+      "weighted_objective": -18.18392412512634
+    },
+    {
+      "objectives": {
+        "reliability": 5.2709176427304,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 90.91187283827209,
+        "interference": -22.759111111109654,
+        "adaptability": 4.714104671193019
+      },
+      "weighted_objective": -18.187850240822794
+    },
+    {
+      "objectives": {
+        "reliability": 5.625493198327446,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 91.3644130958381,
+        "interference": -22.959111111110925,
+        "adaptability": 4.791943714121126
+      },
+      "weighted_objective": -18.19030976921786
+    },
+    {
+      "objectives": {
+        "reliability": 5.581409678708914,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 91.0755545302075,
+        "interference": -23.35911111111078,
+        "adaptability": 4.786811697705758
+      },
+      "weighted_objective": -18.206532914439578
+    },
+    {
+      "objectives": {
+        "reliability": 4.7016230597919915,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 88.50835560318386,
+        "interference": -25.01506428028548,
+        "adaptability": 4.669290677241651
+      },
+      "weighted_objective": -18.223050243155747
+    },
+    {
+      "objectives": {
+        "reliability": 5.70570985836284,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 90.94192634247712,
+        "interference": -23.83911111111113,
+        "adaptability": 4.705517978421382
+      },
+      "weighted_objective": -18.226711280890033
+    },
+    {
+      "objectives": {
+        "reliability": 5.419046761284781,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 89.84829031083703,
+        "interference": -24.71786712893925,
+        "adaptability": 4.601395268508973
+      },
+      "weighted_objective": -18.241414812846514
+    },
+    {
+      "objectives": {
+        "reliability": 5.047711268302368,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 88.73394450522514,
+        "interference": -25.489411198745735,
+        "adaptability": 4.591748871481342
+      },
+      "weighted_objective": -18.24712486964398
+    },
+    {
+      "objectives": {
+        "reliability": 6.075849281665692,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 92.4347070013523,
+        "interference": -22.639111111111102,
+        "adaptability": 4.614718815211257
+      },
+      "weighted_objective": -18.24784546015573
+    },
+    {
+      "objectives": {
+        "reliability": 5.6014992954346035,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 91.20469039052794,
+        "interference": -23.59911111111105,
+        "adaptability": 4.742363619704514
+      },
+      "weighted_objective": -18.269000413186188
+    },
+    {
+      "objectives": {
+        "reliability": 6.000410045649675,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 91.8258077347674,
+        "interference": -23.479243867792416,
+        "adaptability": 4.608189792055251
+      },
+      "weighted_objective": -18.275696644619153
+    },
+    {
+      "objectives": {
+        "reliability": 5.601432804876559,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 90.57875419293818,
+        "interference": -24.442861238221994,
+        "adaptability": 4.635987858052287
+      },
+      "weighted_objective": -18.286352004150125
+    },
+    {
+      "objectives": {
+        "reliability": 5.865801819198738,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 91.13749792332791,
+        "interference": -24.298096444741144,
+        "adaptability": 4.697280955146683
+      },
+      "weighted_objective": -18.287881362345132
+    },
+    {
+      "objectives": {
+        "reliability": 5.8795545778049245,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 91.65592912636257,
+        "interference": -23.584668666145554,
+        "adaptability": 4.599496382855394
+      },
+      "weighted_objective": -18.295095294424563
+    },
+    {
+      "objectives": {
+        "reliability": 6.1808484780629405,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 92.56694151027742,
+        "interference": -23.129857087647462,
+        "adaptability": 4.68263880002083
+      },
+      "weighted_objective": -18.306216501780597
+    },
+    {
+      "objectives": {
+        "reliability": 5.745664085715616,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 91.77215615669105,
+        "interference": -23.39911111111078,
+        "adaptability": 4.754057261007557
+      },
+      "weighted_objective": -18.307490083139008
+    },
+    {
+      "objectives": {
+        "reliability": 5.9130814319082825,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 91.70061319236346,
+        "interference": -23.839111111111304,
+        "adaptability": 4.661023342871592
+      },
+      "weighted_objective": -18.322911374136165
+    },
+    {
+      "objectives": {
+        "reliability": 5.782882267403178,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 91.95319310077522,
+        "interference": -23.39911111111135,
+        "adaptability": 4.756940837210093
+      },
+      "weighted_objective": -18.33209948101928
+    },
+    {
+      "objectives": {
+        "reliability": 5.676208676694186,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 90.87842008236248,
+        "interference": -24.52989395064607,
+        "adaptability": 4.642164042316796
+      },
+      "weighted_objective": -18.335980899713633
+    },
+    {
+      "objectives": {
+        "reliability": 6.070465406277329,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 91.90887980952597,
+        "interference": -24.2391111111113,
+        "adaptability": 4.673879589827052
+      },
+      "weighted_objective": -18.37542106821463
+    },
+    {
+      "objectives": {
+        "reliability": 6.102271661754204,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 92.66704979264055,
+        "interference": -23.559111111111218,
+        "adaptability": 4.829575225609379
+      },
+      "weighted_objective": -18.392158842827126
+    },
+    {
+      "objectives": {
+        "reliability": 6.102271661754204,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 92.66704979264055,
+        "interference": -23.559111111111218,
+        "adaptability": 4.829575225609379
+      },
+      "weighted_objective": -18.392158842827126
+    },
+    {
+      "objectives": {
+        "reliability": 5.7303841329109275,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 91.48419437846175,
+        "interference": -24.39911111111143,
+        "adaptability": 4.752231549170487
+      },
+      "weighted_objective": -18.404755570110215
+    },
+    {
+      "objectives": {
+        "reliability": 5.960088025172212,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 91.86313306975967,
+        "interference": -24.399111111110784,
+        "adaptability": 4.770811216872038
+      },
+      "weighted_objective": -18.40884519053608
+    },
+    {
+      "objectives": {
+        "reliability": 6.138475311066311,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 92.60473544526951,
+        "interference": -23.79911111111135,
+        "adaptability": 4.785198660023564
+      },
+      "weighted_objective": -18.411491363397175
+    },
+    {
+      "objectives": {
+        "reliability": 6.121084104713821,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 92.48443075254573,
+        "interference": -23.89072552056545,
+        "adaptability": 4.737858474190896
+      },
+      "weighted_objective": -18.413490976051186
+    },
+    {
+      "objectives": {
+        "reliability": 4.747203708113396,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 88.877480086566,
+        "interference": -26.106580694831194,
+        "adaptability": 4.732926883143061
+      },
+      "weighted_objective": -18.4373829766324
+    },
+    {
+      "objectives": {
+        "reliability": 5.203446366625846,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 89.5579105341724,
+        "interference": -26.419709224280798,
+        "adaptability": 4.756637959056951
+      },
+      "weighted_objective": -18.4800088866303
+    },
+    {
+      "objectives": {
+        "reliability": 5.07728016814241,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 89.52652328817157,
+        "interference": -26.33447803651664,
+        "adaptability": 4.746454894959165
+      },
+      "weighted_objective": -18.50032407842521
+    },
+    {
+      "objectives": {
+        "reliability": 5.20362426424558,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 89.55929909205825,
+        "interference": -26.619709224280797,
+        "adaptability": 4.75665219086653
+      },
+      "weighted_objective": -18.510231094150118
+    },
+    {
+      "objectives": {
+        "reliability": 5.7326456566428075,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 90.96989958008535,
+        "interference": -25.759084182515714,
+        "adaptability": 4.707354160691084
+      },
+      "weighted_objective": -18.511945722297924
+    },
+    {
+      "objectives": {
+        "reliability": 5.902990118679895,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 91.70609440062994,
+        "interference": -25.133265797962455,
+        "adaptability": 4.720987308665166
+      },
+      "weighted_objective": -18.512163617916613
+    },
+    {
+      "objectives": {
+        "reliability": 5.878034412987476,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 92.28154319190025,
+        "interference": -24.559111111111097,
+        "adaptability": 4.810217373724536
+      },
+      "weighted_objective": -18.53523237509179
+    },
+    {
+      "objectives": {
+        "reliability": 5.871541735922158,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 92.28315246569797,
+        "interference": -24.559111111110948,
+        "adaptability": 4.810267720082105
+      },
+      "weighted_objective": -18.537494481017273
+    },
+    {
+      "objectives": {
+        "reliability": 5.8190885658066245,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 91.44322806899747,
+        "interference": -25.47956758654799,
+        "adaptability": 4.713682085194078
+      },
+      "weighted_objective": -18.537801869260594
+    },
+    {
+      "objectives": {
+        "reliability": 6.269911315614787,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 92.66687878488483,
+        "interference": -24.839111111111308,
+        "adaptability": 4.749562635789335
+      },
+      "weighted_objective": -18.545834633590825
+    },
+    {
+      "objectives": {
+        "reliability": 5.912475398493319,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 91.71808521126232,
+        "interference": -25.40626445572231,
+        "adaptability": 4.721740125079769
+      },
+      "weighted_objective": -18.55255307230085
+    },
+    {
+      "objectives": {
+        "reliability": 5.464837293886624,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 90.7976666950165,
+        "interference": -25.879630933273095,
+        "adaptability": 4.777500433772794
+      },
+      "weighted_objective": -18.565401725762356
+    },
+    {
+      "objectives": {
+        "reliability": 5.978952122639772,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 91.78761174975163,
+        "interference": -25.59611463707437,
+        "adaptability": 4.7264044375141205
+      },
+      "weighted_objective": -18.57429324309243
+    },
+    {
+      "objectives": {
+        "reliability": 5.290178545121971,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 90.08521018087889,
+        "interference": -26.608520812192424,
+        "adaptability": 4.764055110147538
+      },
+      "weighted_objective": -18.58665832794592
+    },
+    {
+      "objectives": {
+        "reliability": 5.992035229962,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 92.51389160734878,
+        "interference": -25.02118536546249,
+        "adaptability": 4.79981169611514
+      },
+      "weighted_objective": -18.618373802883262
+    },
+    {
+      "objectives": {
+        "reliability": 6.163341564249661,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 92.54130248578976,
+        "interference": -25.28066447225164,
+        "adaptability": 4.740952634999497
+      },
+      "weighted_objective": -18.620214803470876
+    },
+    {
+      "objectives": {
+        "reliability": 6.084818103766539,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 91.92233664104855,
+        "interference": -25.977045984182922,
+        "adaptability": 4.69485559522422
+      },
+      "weighted_objective": -18.63135045542355
+    },
+    {
+      "objectives": {
+        "reliability": 6.252692217451978,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 92.6497507650224,
+        "interference": -25.673654373949553,
+        "adaptability": 4.748325340135988
+      },
+      "weighted_objective": -18.672941842840924
+    },
+    {
+      "objectives": {
+        "reliability": 5.992035229962,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 92.51389160734878,
+        "interference": -26.02118536546249,
+        "adaptability": 4.819811696115139
+      },
+      "weighted_objective": -18.765373802883264
+    },
+    {
+      "objectives": {
+        "reliability": 5.9427800462899,
+        "spectral_efficiency": 5.6000000000000005,
+        "energy_efficiency": 92.65406870252103,
+        "interference": -26.221185365461324,
+        "adaptability": 4.828632960129931
+      },
+      "weighted_objective": -18.836862587416945
+    }
+  ],
+  "execution_time": 44.226096630096436
+}

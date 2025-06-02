@@ -1,0 +1,18 @@
+2025-04-08 19:27:08,374 - optimization - INFO - 日志系统初始化完成。日志文件: logs/optimization_20250408_192708.log
+2025-04-08 19:27:08,375 - optimization - INFO - === 开始优化任务 rw155 ===
+2025-04-08 19:27:08,375 - optimization - INFO - 连接到Neo4j数据库 bolt://localhost:7699
+2025-04-08 19:27:08,375 - data.neo4j_handler - INFO - Successfully connected to Neo4j at bolt://localhost:7699
+2025-04-08 19:27:08,390 - optimization - INFO - 执行测试查询...
+2025-04-08 19:27:08,404 - optimization - INFO - 获取任务 rw155 的数据
+2025-04-08 19:27:08,420 - neo4j.notifications - WARNING - Received notification from DBMS server: {severity: WARNING} {code: Neo.ClientNotification.Statement.FeatureDeprecationWarning} {category: DEPRECATION} {title: This feature is deprecated and will be removed in future versions.} {description: The query used a deprecated function: `id`.} {position: line: 6, column: 52, offset: 242} for query: '\n                    MATCH (t:任务 {任务编号: $task_id})\n                    MATCH (t)-[:部署单位]->(n1:节点)\n                    MATCH (n1)-[r:通信手段]->(n2:节点)\n                    WHERE (t)-[:部署单位]->(n2)\n                    RETURN r, type(r) as rel_type, id(n1) as start_id, id(n2) as end_id\n                    '
+2025-04-08 19:27:08,420 - neo4j.notifications - WARNING - Received notification from DBMS server: {severity: WARNING} {code: Neo.ClientNotification.Statement.FeatureDeprecationWarning} {category: DEPRECATION} {title: This feature is deprecated and will be removed in future versions.} {description: The query used a deprecated function: `id`.} {position: line: 6, column: 72, offset: 262} for query: '\n                    MATCH (t:任务 {任务编号: $task_id})\n                    MATCH (t)-[:部署单位]->(n1:节点)\n                    MATCH (n1)-[r:通信手段]->(n2:节点)\n                    WHERE (t)-[:部署单位]->(n2)\n                    RETURN r, type(r) as rel_type, id(n1) as start_id, id(n2) as end_id\n                    '
+2025-04-08 19:27:08,421 - data.neo4j_handler - INFO - Retrieved task data for rw155: 21 links
+2025-04-08 19:27:08,421 - optimization - INFO - 获取任务 rw155 的环境数据
+2025-04-08 19:27:08,425 - data.neo4j_handler - INFO - Retrieved environment data for rw155
+2025-04-08 19:27:08,425 - optimization - INFO - 获取任务 rw155 的约束数据
+2025-04-08 19:27:08,428 - data.neo4j_handler - INFO - Retrieved constraint data for rw155
+2025-04-08 19:27:08,428 - optimization - INFO - 优化配置: 种群大小=150, 迭代代数=300
+2025-04-08 19:27:08,428 - optimization - INFO - 初始化优化器
+2025-04-08 19:27:08,428 - data.neo4j_handler - INFO - Neo4j connection closed
+2025-04-08 19:27:08,437 - optimization - INFO - 开始运行NSGA-II优化
+2025-04-08 19:27:08,438 - data.neo4j_handler - INFO - Successfully connected to Neo4j at bolt://localhost:7699

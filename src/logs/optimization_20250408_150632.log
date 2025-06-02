@@ -1,0 +1,38 @@
+2025-04-08 15:06:32,393 - optimization - INFO - 日志系统初始化完成。日志文件: logs/optimization_20250408_150632.log
+2025-04-08 15:06:32,395 - optimization - INFO - === 开始优化任务 rw001 ===
+2025-04-08 15:06:32,395 - optimization - INFO - 连接到Neo4j数据库 bolt://localhost:7699
+2025-04-08 15:06:32,395 - data.neo4j_handler - INFO - Successfully connected to Neo4j at bolt://localhost:7699
+2025-04-08 15:06:32,403 - optimization - INFO - 执行测试查询...
+2025-04-08 15:06:32,411 - optimization - INFO - 获取任务 rw001 的数据
+2025-04-08 15:06:32,419 - neo4j.notifications - WARNING - Received notification from DBMS server: {severity: WARNING} {code: Neo.ClientNotification.Statement.FeatureDeprecationWarning} {category: DEPRECATION} {title: This feature is deprecated and will be removed in future versions.} {description: The query used a deprecated function: `id`.} {position: line: 6, column: 52, offset: 242} for query: '\n                    MATCH (t:任务 {任务编号: $task_id})\n                    MATCH (t)-[:部署单位]->(n1:节点)\n                    MATCH (n1)-[r:通信手段]->(n2:节点)\n                    WHERE (t)-[:部署单位]->(n2)\n                    RETURN r, type(r) as rel_type, id(n1) as start_id, id(n2) as end_id\n                    '
+2025-04-08 15:06:32,419 - neo4j.notifications - WARNING - Received notification from DBMS server: {severity: WARNING} {code: Neo.ClientNotification.Statement.FeatureDeprecationWarning} {category: DEPRECATION} {title: This feature is deprecated and will be removed in future versions.} {description: The query used a deprecated function: `id`.} {position: line: 6, column: 72, offset: 262} for query: '\n                    MATCH (t:任务 {任务编号: $task_id})\n                    MATCH (t)-[:部署单位]->(n1:节点)\n                    MATCH (n1)-[r:通信手段]->(n2:节点)\n                    WHERE (t)-[:部署单位]->(n2)\n                    RETURN r, type(r) as rel_type, id(n1) as start_id, id(n2) as end_id\n                    '
+2025-04-08 15:06:32,420 - data.neo4j_handler - INFO - Retrieved task data for rw001: 6 links
+2025-04-08 15:06:32,420 - optimization - INFO - 获取任务 rw001 的环境数据
+2025-04-08 15:06:32,421 - data.neo4j_handler - INFO - Retrieved environment data for rw001
+2025-04-08 15:06:32,422 - optimization - INFO - 获取任务 rw001 的约束数据
+2025-04-08 15:06:32,423 - data.neo4j_handler - INFO - Retrieved constraint data for rw001
+2025-04-08 15:06:32,423 - optimization - INFO - 优化配置: 种群大小=100, 迭代代数=200
+2025-04-08 15:06:32,424 - optimization - INFO - 初始化优化器
+2025-04-08 15:06:32,424 - data.neo4j_handler - INFO - Neo4j connection closed
+2025-04-08 15:06:32,425 - optimization - INFO - 正在执行优化方法对比
+2025-04-08 15:06:32,425 - data.neo4j_handler - INFO - Successfully connected to Neo4j at bolt://localhost:7699
+2025-04-08 15:06:32,436 - data.neo4j_handler - INFO - Found 10 similar cases for task rw001
+2025-04-08 15:06:32,441 - data.neo4j_handler - INFO - Retrieved 6 communication links for task rw198
+2025-04-08 15:06:32,447 - data.neo4j_handler - INFO - Retrieved 6 communication links for task rw262
+2025-04-08 15:06:32,453 - data.neo4j_handler - INFO - Retrieved 6 communication links for task rw146
+2025-04-08 15:06:32,459 - data.neo4j_handler - INFO - Retrieved 6 communication links for task rw171
+2025-04-08 15:06:32,465 - data.neo4j_handler - INFO - Retrieved 8 communication links for task rw223
+2025-04-08 15:06:32,473 - data.neo4j_handler - INFO - Retrieved 14 communication links for task rw244
+2025-04-08 15:06:32,479 - data.neo4j_handler - INFO - Retrieved 6 communication links for task rw051
+2025-04-08 15:06:32,485 - data.neo4j_handler - INFO - Retrieved 6 communication links for task rw053
+2025-04-08 15:06:32,492 - data.neo4j_handler - INFO - Retrieved 11 communication links for task rw157
+2025-04-08 15:06:32,497 - data.neo4j_handler - INFO - Retrieved 6 communication links for task rw295
+2025-04-08 15:07:29,695 - optimization - ERROR - 优化过程中发生错误: name 'json' is not defined
+2025-04-08 15:07:29,696 - optimization - ERROR - Traceback (most recent call last):
+  File "main.py", line 99, in main
+    comparison_results = optimizer.compare_optimization_methods(args.task_id)
+  File "/home/fangwentao/naval_comm_opt/src/optimization/nsga2_optimizer.py", line 551, in compare_optimization_methods
+    json.dump(comparison_results, f, ensure_ascii=False, indent=2)
+NameError: name 'json' is not defined
+
+2025-04-08 15:07:29,696 - optimization - INFO - === 优化任务结束 ===

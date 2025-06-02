@@ -1,0 +1,10 @@
+2025-06-03 02:37:55,439 - optimization - INFO - 日志系统初始化完成。日志文件: logs/optimization_20250603_023755.log
+2025-06-03 02:40:09,069 - optimization - ERROR - 对比优化失败：'ImprovedCommunicationOptimizer' object has no attribute 'optimize_traditional'
+2025-06-03 02:40:09,070 - optimization - ERROR - 优化执行失败：'ImprovedCommunicationOptimizer' object has no attribute 'optimize_traditional'
+2025-06-03 02:40:09,071 - optimization - ERROR - Traceback (most recent call last):
+  File "improved_main.py", line 371, in _execute_optimization
+    comparison_results = self._run_comparison_optimization(optimizer)
+  File "improved_main.py", line 443, in _run_comparison_optimization
+    trad_pareto, trad_variables, trad_history = optimizer.optimize_traditional()
+AttributeError: 'ImprovedCommunicationOptimizer' object has no attribute 'optimize_traditional'
+

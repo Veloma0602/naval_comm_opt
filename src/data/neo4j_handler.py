@@ -1,0 +1,1223 @@
+from neo4j import GraphDatabase
+from typing import Dict, List, Any, Optional, Union
+import numpy as np
+import logging
+
+# 配置日志
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
+class Neo4jHandler:
+    def __init__(self, uri: str, user: str, password: str):
+        """
+        初始化Neo4j处理器
+        
+        参数:
+        uri: Neo4j数据库URI
+        user: 用户名
+        password: 密码
+        """
+        try:
+            self.driver = GraphDatabase.driver(uri, auth=(user, password))
+            logger.info(f"Successfully connected to Neo4j at {uri}")
+            # 测试连接
+            with self.driver.session() as session:
+                result = session.run("RETURN 1 as test")
+                test_value = result.single()["test"]
+                if test_value != 1:
+                    raise Exception("Connection test failed")
+        except Exception as e:
+            logger.error(f"Failed to connect to Neo4j: {str(e)}")
+            raise
+        
+    def close(self):
+        """关闭数据库连接"""
+        if hasattr(self, 'driver'):
+            self.driver.close()
+            logger.info("Neo4j connection closed")
+        
+
+    def get_task_data(self, task_id: str) -> Optional[Dict]:
+        """
+        获取任务数据
+        
+        参数:
+        task_id: 任务ID
+        
+        返回:
+        任务数据字典或None（如果找不到）
+        """
+        try:
+            # 直接采用更简单的查询方式，与测试查询保持一致
+            with self.driver.session() as session:
+                # 获取任务
+                task_result = session.run("""
+                    MATCH (t:任务 {任务编号: $task_id})
+                    RETURN t
+                    """, task_id=task_id)
+                
+                task_record = task_result.single()
+                if not task_record:
+                    logger.warning(f"No task found with ID: {task_id}")
+                    return None
+                
+                task = task_record['t']
+                
+                # 获取任务部署的节点
+                node_result = session.run("""
+                    MATCH (t:任务 {任务编号: $task_id})
+                    MATCH (t)-[:部署单位]->(n:节点)
+                    RETURN collect(n) as nodes
+                    """, task_id=task_id)
+                
+                node_record = node_result.single()
+                nodes = node_record['nodes'] if node_record else []
+                
+                relation_result = session.run("""
+                    MATCH (t:任务 {任务编号: $task_id})
+                    MATCH (t)-[:部署单位]->(n1:节点)
+                    MATCH (n1)-[r:通信手段]->(n2:节点)
+                    WHERE (t)-[:部署单位]->(n2)
+                    RETURN r, type(r) as rel_type, id(n1) as start_id, id(n2) as end_id
+                    """, task_id=task_id)
+
+                relationships = []
+                for record in relation_result:
+                    # 安全转换关系对象
+                    if hasattr(record['r'], 'items'):
+                        rel = dict(record['r'])
+                    else:
+                        rel = record['r']
+                    # 添加类型信息到关系字典
+                    rel['type'] = record['rel_type']
+                    rel['start'] = record['start_id']
+                    rel['end'] = record['end_id']
+                    relationships.append(rel)
+                    
+                print(f"Retrieved {len(relationships)} communication relations with type info")
+                
+                # 构建记录
+                record = {
+                    't': task,
+                    'nodes': nodes,
+                    'relationships': relationships
+                }
+                
+                # 处理记录
+                task_data = self.process_task_record(record)
+                
+                logger.info(f"Retrieved task data for {task_id}: {len(task_data['communication_links'])} links")
+                
+                if not task_data['communication_links']:
+                    logger.warning(f"No communication links found for task {task_id}")
+                    logger.warning(f"Task has {len(nodes)} deployed nodes")
+                
+                return task_data
+        except Exception as e:
+            logger.error(f"Error retrieving task data for {task_id}: {str(e)}")
+            return None
+                
+    def get_environment_data(self, task_id: str) -> Optional[Dict]:
+        """
+        获取环境条件数据
+        
+        参数:
+        task_id: 任务ID
+        
+        返回:
+        环境数据字典或None（如果找不到）
+        """
+        try:
+            with self.driver.session() as session:
+                result = session.run("""
+                    MATCH (t:任务 {任务编号: $task_id})-[:具有环境]->(e:环境条件)
+                    RETURN e
+                    """, task_id=task_id)
+                
+                record = result.single()
+                if record:
+                    env_data = dict(record['e'])
+                    logger.info(f"Retrieved environment data for {task_id}")
+                    return env_data
+                
+                logger.warning(f"No environment data found for task ID: {task_id}")
+                # 返回默认环境数据
+                return {
+                    '海况等级': 3,
+                    '电磁干扰强度': 0.5,
+                    '背景噪声': -100,
+                    '多径效应': 0.3,
+                    '温度': 20,
+                    '盐度': 35,
+                    '深度': 50
+                }
+        except Exception as e:
+            logger.error(f"Error retrieving environment data for {task_id}: {str(e)}")
+            return None
+            
+    def get_constraint_data(self, task_id: str) -> Optional[Dict]:
+        """
+        获取约束条件数据
+        
+        参数:
+        task_id: 任务ID
+        
+        返回:
+        约束数据字典或None（如果找不到）
+        """
+        try:
+            with self.driver.session() as session:
+                result = session.run("""
+                    MATCH (t:任务 {任务编号: $task_id})-[:受约束]->(c:通信约束)
+                    RETURN c
+                    """, task_id=task_id)
+                
+                record = result.single()
+                if record:
+                    constraint_data = dict(record['c'])
+                    logger.info(f"Retrieved constraint data for {task_id}")
+                    return constraint_data
+                
+                logger.warning(f"No constraint data found for task ID: {task_id}")
+                # 返回默认约束数据
+                return {
+                    '最小可靠性要求': 0.95,
+                    '最大时延要求': 100,
+                    '最小信噪比': 15,
+                    '频谱最小频率': 100e6,
+                    '频谱最大频率': 10e9,
+                    '带宽限制': 50e6,
+                    '发射功率限制': 50
+                }
+        except Exception as e:
+            logger.error(f"Error retrieving constraint data for {task_id}: {str(e)}")
+            return None
+            
+    def get_similar_cases(self, task_id: str, limit: int = 10) -> List[str]:
+        """
+        获取相似历史案例 - 改进版
+        
+        参数:
+        task_id: 当前任务ID
+        limit: 最大返回结果数
+        
+        返回:
+        相似案例ID列表，按相似度排序
+        """
+        try:
+            with self.driver.session() as session:
+                # 1. 获取当前任务的环境数据和约束数据
+                current_env = session.run("""
+                    MATCH (t:任务 {任务编号: $task_id})-[:具有环境]->(e:环境条件)
+                    RETURN e
+                    """, task_id=task_id).single()
+                    
+                current_constraints = session.run("""
+                    MATCH (t:任务 {任务编号: $task_id})-[:受约束]->(c:通信约束)
+                    RETURN c
+                    """, task_id=task_id).single()
+                    
+                if not current_env or not current_constraints:
+                    logger.warning(f"任务 {task_id} 缺少环境或约束信息")
+                    
+                # 2. 提取关键环境和约束参数
+                current_env_data = dict(current_env['e']) if current_env else {}
+                current_const_data = dict(current_constraints['c']) if current_constraints else {}
+                
+                # 环境关键参数
+                env_keys = ['海况等级', '电磁干扰强度', '背景噪声', '多径效应', '温度', '盐度', '深度']
+                # 约束关键参数
+                const_keys = ['最小可靠性要求', '最大时延要求', '最小信噪比', '频谱最小频率', 
+                            '频谱最大频率', '带宽限制', '发射功率限制']
+                
+                # 3. 基于多因素查找相似任务
+                # 使用更复杂的相似度计算 - 任务区域、兵力组成、环境条件、通信约束
+                similar_tasks_result = session.run("""
+                    MATCH (t1:任务 {任务编号: $task_id})
+                    MATCH (t2:任务) WHERE t2.任务编号 <> $task_id
+                    
+                    // 获取环境和约束数据
+                    OPTIONAL MATCH (t1)-[:具有环境]->(e1:环境条件)
+                    OPTIONAL MATCH (t2)-[:具有环境]->(e2:环境条件)
+                    OPTIONAL MATCH (t1)-[:受约束]->(c1:通信约束)
+                    OPTIONAL MATCH (t2)-[:受约束]->(c2:通信约束)
+                    
+                    // 计算任务属性相似度
+                    WITH t1, t2, e1, e2, c1, c2,
+                        CASE WHEN t1.任务区域 = t2.任务区域 THEN 1.0 ELSE 0.2 END as area_sim,
+                        CASE WHEN t1.兵力组成 = t2.兵力组成 THEN 1.0 ELSE 0.3 END as force_sim,
+                        CASE WHEN t1.任务名称 CONTAINS '联合' AND t2.任务名称 CONTAINS '联合' THEN 1.0
+                            WHEN t1.任务名称 CONTAINS '巡航' AND t2.任务名称 CONTAINS '巡航' THEN 1.0
+                            ELSE 0.5 END as type_sim
+                    
+                    // 计算环境相似度 (如果存在)
+                    WITH t1, t2, e1, e2, c1, c2, area_sim, force_sim, type_sim,
+                        CASE WHEN e1 IS NOT NULL AND e2 IS NOT NULL THEN
+                            (
+                            // 海况相似度 - 特别重要
+                            CASE WHEN abs(toFloat(e1.海况等级) - toFloat(e2.海况等级)) <= 1 THEN 1.0 
+                                WHEN abs(toFloat(e1.海况等级) - toFloat(e2.海况等级)) <= 3 THEN 0.7
+                                ELSE 0.3 END * 0.35 +
+                            // 电磁干扰相似度
+                            CASE WHEN abs(toFloat(e1.电磁干扰强度) - toFloat(e2.电磁干扰强度)) <= 0.2 THEN 1.0
+                                WHEN abs(toFloat(e1.电磁干扰强度) - toFloat(e2.电磁干扰强度)) <= 0.4 THEN 0.7
+                                ELSE 0.3 END * 0.25 +
+                            // 温度相似度
+                            CASE WHEN abs(toFloat(e1.温度) - toFloat(e2.温度)) <= 5 THEN 1.0
+                                WHEN abs(toFloat(e1.温度) - toFloat(e2.温度)) <= 10 THEN 0.7
+                                ELSE 0.3 END * 0.2 +
+                            // 深度相似度
+                            CASE WHEN abs(toFloat(e1.深度) - toFloat(e2.深度)) <= 100 THEN 1.0
+                                WHEN abs(toFloat(e1.深度) - toFloat(e2.深度)) <= 300 THEN 0.7
+                                ELSE 0.3 END * 0.2
+                            )
+                        ELSE 0.5 END as env_sim
+                    
+                    // 计算约束相似度 (如果存在)
+                    WITH t1, t2, area_sim, force_sim, type_sim, env_sim,
+                        CASE WHEN c1 IS NOT NULL AND c2 IS NOT NULL THEN
+                            (
+                            // 可靠性要求相似度
+                            CASE WHEN abs(toFloat(c1.最小可靠性要求) - toFloat(c2.最小可靠性要求)) <= 0.05 THEN 1.0
+                                WHEN abs(toFloat(c1.最小可靠性要求) - toFloat(c2.最小可靠性要求)) <= 0.1 THEN 0.7
+                                ELSE 0.3 END * 0.3 +
+                            // 时延要求相似度
+                            CASE WHEN abs(toFloat(c1.最大时延要求) - toFloat(c2.最大时延要求)) <= 20 THEN 1.0
+                                WHEN abs(toFloat(c1.最大时延要求) - toFloat(c2.最大时延要求)) <= 50 THEN 0.7
+                                ELSE 0.3 END * 0.3 +
+                            // 带宽和功率限制相似度
+                            CASE WHEN abs(toFloat(c1.带宽限制) - toFloat(c2.带宽限制)) <= 10 THEN 1.0
+                                WHEN abs(toFloat(c1.带宽限制) - toFloat(c2.带宽限制)) <= 20 THEN 0.7
+                                ELSE 0.3 END * 0.2 +
+                            CASE WHEN abs(toFloat(c1.发射功率限制) - toFloat(c2.发射功率限制)) <= 20 THEN 1.0
+                                WHEN abs(toFloat(c1.发射功率限制) - toFloat(c2.发射功率限制)) <= 50 THEN 0.7
+                                ELSE 0.3 END * 0.2
+                            )
+                        ELSE 0.5 END as const_sim
+                    
+                    // 计算总体相似度并排序
+                    WITH t2.任务编号 as similar_task_id,
+                        area_sim * 0.25 +
+                        force_sim * 0.15 +
+                        type_sim * 0.1 +
+                        env_sim * 0.25 +
+                        const_sim * 0.25 as total_similarity
+                    WHERE total_similarity > 0.6  // 只返回相似度超过阈值的任务
+                    RETURN similar_task_id, total_similarity
+                    ORDER BY total_similarity DESC
+                    LIMIT $limit
+                    """, task_id=task_id, limit=limit)
+                
+                # 4. 获取历史成功优化结果的任务 (增加权重)
+                success_history_result = session.run("""
+                    MATCH (t:任务)-[:优化方案]->(r:优化结果)
+                    WHERE t.任务编号 <> $task_id
+                    WITH t.任务编号 as task_id, avg(r.可靠性目标) as avg_reliability
+                    WHERE avg_reliability > 3.5  // 选择可靠性较高的历史任务
+                    RETURN task_id, avg_reliability
+                    ORDER BY avg_reliability DESC
+                    LIMIT $limit
+                    """, task_id=task_id, limit=limit//2)
+                
+                # 5. 合并结果并进行加权
+                similar_tasks = [(record["similar_task_id"], record["total_similarity"]) 
+                                for record in similar_tasks_result]
+                
+                success_tasks = [(record["task_id"], record["avg_reliability"]/5.0)  # 归一化
+                            for record in success_history_result]
+                
+                # 合并两个列表，避免重复
+                all_tasks = {}
+                for task_id, sim in similar_tasks:
+                    all_tasks[task_id] = sim
+                    
+                for task_id, score in success_tasks:
+                    if task_id in all_tasks:
+                        # 如果任务同时在两个列表中，增加权重
+                        all_tasks[task_id] = all_tasks[task_id] * 0.6 + score * 0.4
+                    else:
+                        all_tasks[task_id] = score * 0.8  # 降低单纯基于结果的任务权重
+                
+                # 按相似度排序并返回任务ID
+                sorted_tasks = sorted(all_tasks.items(), key=lambda x: x[1], reverse=True)
+                result_tasks = [task_id for task_id, _ in sorted_tasks[:limit]]
+                
+                logger.info(f"找到 {len(result_tasks)} 个相似案例，基于环境和约束相似度")
+                
+                # 记录更详细的相似信息，用于调试
+                if result_tasks:
+                    task_details = []
+                    for t_id in result_tasks[:3]:  # 只记录前3个，避免日志过大
+                        task_data = session.run("""
+                            MATCH (t:任务 {任务编号: $task_id})
+                            RETURN t.任务区域 as area, t.兵力组成 as force
+                            """, task_id=t_id).single()
+                        if task_data:
+                            task_details.append(f"{t_id}({task_data['area']},{task_data['force']})")
+                    
+                    logger.info(f"相似案例详情: {', '.join(task_details)}")
+                
+                return result_tasks
+                    
+        except Exception as e:
+            logger.error(f"获取相似案例时出错: {str(e)}")
+            return []
+    
+    def get_optimization_results(self, task_id: str, limit: int = 5) -> List[Dict]:
+        """
+        获取历史优化结果
+        
+        参数:
+        task_id: 任务ID
+        limit: 最大返回结果数
+        
+        返回:
+        优化结果列表
+        """
+        try:
+            with self.driver.session() as session:
+                result = session.run("""
+                    MATCH (t:任务 {任务编号: $task_id})-[:优化方案]->(r:优化结果)
+                    RETURN r
+                    ORDER BY r.可靠性目标 DESC
+                    LIMIT $limit
+                    """, task_id=task_id, limit=limit)
+                
+                optimization_results = []
+                for record in result:
+                    result_node = dict(record['r'])
+                    optimization_results.append(result_node)
+                
+                logger.info(f"Retrieved {len(optimization_results)} optimization results for task {task_id}")
+                return optimization_results
+                
+        except Exception as e:
+            logger.error(f"Error retrieving optimization results for {task_id}: {str(e)}")
+            return []
+            
+    def save_optimization_results(self, task_id: str,
+                                pareto_front: np.ndarray,
+                                optimal_variables: np.ndarray) -> None:
+        """
+        保存优化结果到数据库
+        
+        参数:
+        task_id: 任务ID
+        pareto_front: Pareto前沿（目标函数值）
+        optimal_variables: 对应的最优变量值
+        """
+        try:
+            with self.driver.session() as session:
+                # 先清除可能存在的旧结果
+                session.run("""
+                    MATCH (t:任务 {任务编号: $task_id})-[r:优化方案]->(result:优化结果)
+                    DELETE r, result
+                    """, task_id=task_id)
+                
+                # 保存新结果
+                for i, (objectives, variables) in enumerate(zip(pareto_front, optimal_variables)):
+                    # 每个解的唯一标识
+                    result_id = f"{task_id}_result_{i}"
+                    
+                    # 解的目标函数值
+                    reliability = float(-objectives[0])  # 注意取反，因为优化过程是最小化目标
+                    spectral_efficiency = float(-objectives[1])
+                    energy_efficiency = float(-objectives[2])
+                    interference = float(-objectives[3])
+                    adaptability = float(-objectives[4])
+                    
+                    session.run("""
+                        MATCH (t:任务 {任务编号: $task_id})
+                        CREATE (r:优化结果 {
+                            结果编号: $result_id,
+                            可靠性目标: $reliability,
+                            频谱效率目标: $spectral_efficiency,
+                            能量效率目标: $energy_efficiency,
+                            抗干扰目标: $interference,
+                            环境适应性目标: $adaptability,
+                            参数配置: $variables
+                        })
+                        CREATE (t)-[:优化方案]->(r)
+                        """,
+                        task_id=task_id,
+                        result_id=result_id,
+                        reliability=reliability,
+                        spectral_efficiency=spectral_efficiency,
+                        energy_efficiency=energy_efficiency,
+                        interference=interference,
+                        adaptability=adaptability,
+                        variables=variables.tolist()
+                    )
+                
+                logger.info(f"Saved {len(pareto_front)} optimization results for task {task_id}")
+        
+        except Exception as e:
+            logger.error(f"Error saving optimization results for {task_id}: {str(e)}")
+            raise
+    
+    def process_task_record(self, record):
+        """
+        处理任务记录数据，构建标准化的任务数据结构
+        
+        参数:
+        record: 从Neo4j查询返回的记录
+        
+        返回:
+        处理后的任务数据字典
+        """
+        if not record:
+            return None
+            
+        # 确保正确转换Neo4j对象为Python字典
+        if hasattr(record['t'], 'items'):
+            task = dict(record['t'])
+        else:
+            task = record['t']
+        
+        nodes = []
+        for node in record['nodes']:
+            if hasattr(node, 'items'):
+                nodes.append(dict(node))
+            else:
+                nodes.append(node)
+        
+        relationships = []
+        for rel in record['relationships']:
+            if hasattr(rel, 'items'):
+                relationships.append(dict(rel))
+            else:
+                relationships.append(rel)
+        
+        # 调试信息
+        print(f"处理任务记录: 找到 {len(nodes)} 个节点, {len(relationships)} 个关系")
+        
+        # 构造返回数据结构
+        task_data = {
+            'task_info': {
+                'task_id': task.get('任务编号'),
+                'task_name': task.get('任务名称'),
+                'task_target': task.get('任务目标'),
+                'task_area': task.get('任务区域'),
+                'task_time': task.get('任务时间范围'),
+                'force_composition': task.get('兵力组成'),
+                'communication_plan': task.get('通信方案编号')
+            },
+            'nodes': {
+                'command_center': None,    # 指挥所
+                'command_ship': None,      # 海上指挥舰船
+                'combat_units': [],        # 作战单位
+                'comm_stations': [],       # 通信站
+                'communication_systems': [] # 通信系统/设备
+            },
+            'communication_links': [],     # 通信链路
+            'environment': None,           # 环境条件
+            'constraints': None            # 通信约束
+        }
+
+        # 处理节点分类
+        for node in nodes:
+            node_type = node.get('节点类型', '')
+            
+            if node_type in ['航母', '驱逐舰', '护卫舰', '潜艇']:
+                if node_type == '航母' or (node_type == '驱逐舰' and 
+                                        not task_data['nodes']['command_ship']):
+                    task_data['nodes']['command_ship'] = node
+                task_data['nodes']['combat_units'].append(node)
+            elif '指挥所' in node.get('labels', []) or node_type == '指挥所':
+                task_data['nodes']['command_center'] = node
+            elif '通信站' in node.get('labels', []) or node_type == '通信站':
+                task_data['nodes']['comm_stations'].append(node)
+            elif '通信设备' in node.get('labels', []) or node_type == '通信设备':
+                task_data['nodes']['communication_systems'].append(node)
+        
+        # 关系处理部分
+        for rel in relationships:
+            # 调试输出关系信息
+            rel_type = rel.get('type', '未知')
+            print(f"处理关系: type={rel_type}, properties={rel.get('properties', {})}")
+            
+            # 检查是否是通信手段关系 - 更宽松的匹配
+            if '通信' in rel_type or rel_type == '通信手段':
+                # 获取节点之间的关系属性
+                # 直接从关系对象获取属性
+                
+                # 构建通信链路信息
+                link = {
+                    'source_id': rel.get('start'),
+                    'target_id': rel.get('end'),
+                    'comm_type': rel.get('通信手段类型', '未知'),
+                    'frequency_band': rel.get('工作频段', ''),
+                    'bandwidth': self._parse_bandwidth(rel.get('带宽大小', '')),
+                    'power': self._parse_power(rel.get('发射功率', '')),
+                    'modulation': rel.get('调制方式', 'BPSK'),
+                    'polarization': rel.get('极化方式', 'LINEAR'),
+                    'snr': self._parse_snr(rel.get('预计信噪比', '15dB')),
+                    'distance': self._parse_distance(rel.get('通信距离', '100公里')),
+                    'required_equipment': rel.get('所需设备', ''),
+                    'network_status': rel.get('网络状态', ''),
+                    'network_quality': rel.get('网络质量', '良好'),
+                    'path': rel.get('业务传输路径', ''),
+                    'service_quality': rel.get('服务质量', ''),
+                    'ber': rel.get('误码率', ''),
+                    'availability': rel.get('平均可用性', ''),
+                    'encryption_level': rel.get('加密等级', '')
+                }
+                
+                # 解析频率
+                freq_min, freq_max = self._parse_frequency_band(rel.get('工作频段', ''))
+                link['frequency_min'] = freq_min
+                link['frequency_max'] = freq_max
+                link['frequency'] = (freq_min + freq_max) / 2  # 使用中心频率
+                
+                task_data['communication_links'].append(link)
+                print(f"  创建通信链路: {link['source_id']} -> {link['target_id']}, 类型={link['comm_type']}")
+                
+            elif rel_type == '有线连接':
+                # 处理有线连接
+                # 直接从关系对象获取属性
+                link = {
+                    'source_id': rel.get('start'),
+                    'target_id': rel.get('end'),
+                    'conn_type': '有线连接',
+                    'line_type': properties.get('连接类型', ''),
+                    'transmission_rate': properties.get('传输速率', ''),
+                    'delay': properties.get('传输延迟', '')
+                }
+                task_data['communication_links'].append(link)
+
+        print(f"处理完成: 创建了 {len(task_data['communication_links'])} 个通信链路")
+        return task_data
+    def _parse_snr(self, snr_str: str) -> float:
+        """解析信噪比字符串"""
+        try:
+            if not snr_str:
+                return 15.0
+            import re
+            numeric_match = re.search(r'-?\d+\.?\d*', snr_str)
+            if numeric_match:
+                return float(numeric_match.group())
+            return 15.0
+        except Exception:
+            return 15.0
+
+    def _parse_distance(self, distance_str: str) -> float:
+        """解析距离字符串"""
+        try:
+            if not distance_str:
+                return 100.0
+            import re
+            numeric_match = re.search(r'-?\d+\.?\d*', distance_str)
+            if numeric_match:
+                return float(numeric_match.group())
+            return 100.0
+        except Exception:
+            return 100.0
+            
+    def _parse_frequency_band(self, freq_band: str) -> tuple:
+        """
+        解析频段字符串，提取最小和最大频率值
+        
+        参数:
+        freq_band: 频段字符串（如 "3000/4300"）
+        
+        返回:
+        (min_freq, max_freq): 频率范围（MHz）
+        """
+        try:
+            if not freq_band or '/' not in freq_band:
+                return 0, 0
+                    
+            parts = freq_band.split('/')
+            min_freq = self._parse_numeric_value(parts[0].strip())
+            max_freq = self._parse_numeric_value(parts[1].strip())
+            return min_freq, max_freq
+        except Exception:
+            return 0, 0
+    
+    def _parse_bandwidth(self, bandwidth: str) -> float:
+        """
+        解析带宽字符串，提取数值
+        
+        参数:
+        bandwidth: 带宽字符串（如 "1300"、"1300MHz"）
+        
+        返回:
+        带宽值（MHz）
+        """
+        return self._parse_numeric_value(bandwidth)
+        
+    # def _parse_power(self, power: str) -> float:
+    #     """
+    #     解析功率字符串，提取数值
+        
+    #     参数:
+    #     power: 功率字符串（如 "33w"、"33W"）
+        
+    #     返回:
+    #     功率值（W）
+    #     """
+    #     try:
+    #         if not power:
+    #             return 0
+                
+    #         # 移除单位并转换为浮点数
+    #         value = ''.join(c for c in power if c.isdigit() or c == '.')
+    #         return float(value) if value else 0
+    #     except Exception:
+    #         return 0
+    def _parse_power(self, power: str) -> float:
+        """
+        解析功率字符串，提取数值
+        
+        参数:
+        power: 功率字符串（如 "33w"、"33W"）
+        
+        返回:
+        功率值（W）
+        """
+        return self._parse_numeric_value(power)
+
+    def get_historical_communication_parameters(self, task_id: str) -> List[Dict]:
+        """从历史任务中获取通信参数配置"""
+        try:
+            with self.driver.session() as session:
+                result = session.run("""
+                    MATCH (t:任务 {任务编号: $task_id})
+                    MATCH (t)-[:部署单位]->(n1:节点)
+                    MATCH (n1)-[r:通信手段]->(n2:节点)
+                    WHERE (t)-[:部署单位]->(n2)
+                    RETURN r as communication_link
+                    """, task_id=task_id)
+                
+                parameters = []
+                for record in result:
+                    link = dict(record['communication_link'])
+                    link_params = self._extract_communication_parameters(link)
+                    if link_params:
+                        parameters.append(link_params)
+                
+                return parameters
+        except Exception as e:
+            logger.error(f"Error retrieving communication parameters for {task_id}: {str(e)}")
+            return []
+
+    
+    def _extract_communication_parameters(self, link: Dict) -> Optional[Dict]:
+        """从通信链路中提取通信参数"""
+        try:
+            # 提取频率参数
+            freq_band = link.get('properties', {}).get('工作频段', '')
+            freq_min, freq_max = self._parse_frequency_band(freq_band)
+            center_freq = (freq_min + freq_max) / 2 if freq_min and freq_max else 0
+            
+            # 提取带宽参数
+            bandwidth_text = link.get('properties', {}).get('带宽大小', '')
+            bandwidth = self._parse_bandwidth(bandwidth_text)
+            
+            # 提取功率参数
+            power_text = link.get('properties', {}).get('发射功率', '')
+            power = self._parse_power(power_text)
+            
+            # 提取调制方式(可能需要从设备或默认值推断)
+            comm_type = link.get('properties', {}).get('通信手段类型', '')
+            modulation = self._infer_modulation(comm_type)
+            
+            # 提取极化方式(可能需要从设备或默认值推断)
+            polarization = self._infer_polarization(comm_type)
+            
+            return {
+                'frequency': center_freq,
+                'bandwidth': bandwidth,
+                'power': power,
+                'modulation': modulation,
+                'polarization': polarization,
+                'source_id': link.get('start'),
+                'target_id': link.get('end'),
+                'link_type': comm_type
+            }
+        except Exception as e:
+            logger.error(f"Error extracting parameters: {str(e)}")
+            return None
+
+    def _infer_modulation(self, comm_type: str) -> str:
+        """根据通信方式推断调制方式"""
+        modulation_map = {
+            '卫星通信': 'QPSK',
+            '超低频通信': 'BPSK',
+            '短波通信': 'BPSK',
+            '数据链': 'QAM16'
+        }
+        for key, value in modulation_map.items():
+            if key in comm_type:
+                return value
+        return 'BPSK'  # 默认值
+
+    def _infer_polarization(self, comm_type: str) -> str:
+        """根据通信方式推断极化方式"""
+        if '卫星' in comm_type:
+            return 'CIRCULAR'
+        elif '低频' in comm_type:
+            return 'LINEAR'
+        else:
+            return 'LINEAR'  # 默认值
+
+    def get_task_communication_links(self, task_id: str) -> List[Dict]:
+        """获取特定任务的通信链路，确保链路确实属于该任务"""
+        try:
+            with self.driver.session() as session:
+                # 先获取任务部署的所有节点
+                node_result = session.run("""
+                    MATCH (t:任务 {任务编号: $task_id})
+                    MATCH (t)-[:部署单位]->(n:节点)
+                    RETURN collect(n.编号) as task_nodes
+                    """, task_id=task_id)
+                
+                task_node_record = node_result.single()
+                if not task_node_record:
+                    return []
+                    
+                task_nodes = set(task_node_record['task_nodes'])
+                
+                # 然后获取这些节点之间的通信链路
+                link_result = session.run("""
+                    MATCH (s:节点)-[r:通信手段]->(t:节点)
+                    WHERE s.编号 IN $task_nodes AND t.编号 IN $task_nodes
+                    RETURN r
+                    """, task_nodes=list(task_nodes))
+                
+                links = []
+                for record in link_result:
+                    link_data = dict(record['r'])
+                    # 验证链路确实适用于当前任务
+                    if self._verify_link_for_task(link_data, task_id):
+                        links.append(link_data)
+
+                logger.info(f"Retrieved {len(links)} communication links for task {task_id}")
+                return links
+        except Exception as e:
+            logger.error(f"Error retrieving communication links: {str(e)}")
+            return []
+            
+    def _verify_link_for_task(self, link: Dict, task_id: str) -> bool:
+        """验证通信链路是否适用于特定任务"""
+        # 简单实现：假设所有在任务节点间的链路都属于该任务
+        return True
+
+    def _parse_numeric_value(self, value_str: str) -> float:
+        """
+        从可能包含单位的字符串中提取数值
+        
+        参数:
+        value_str: 可能包含单位的数值字符串
+        
+        返回:
+        提取的浮点数值
+        """
+        if value_str is None:
+            return 0.0
+            
+        if isinstance(value_str, (int, float)):
+            return float(value_str)
+        
+        if isinstance(value_str, str):
+            # 尝试直接转换
+            try:
+                return float(value_str)
+            except ValueError:
+                pass
+                
+            # 提取数字部分 (包括负号和小数点)
+            import re
+            numeric_match = re.search(r'-?\d+\.?\d*', value_str)
+            if numeric_match:
+                try:
+                    return float(numeric_match.group())
+                except ValueError:
+                    pass
+        
+        # 默认返回0
+        return 0.0
+
+    # 测试方法
+    def test_query(self, task_id: str):
+        """测试查询，用于调试"""
+        try:
+            with self.driver.session() as session:
+                # 测试1: 简单查询任务
+                task_result = session.run("""
+                    MATCH (t:任务 {任务编号: $task_id})
+                    RETURN t
+                    """, task_id=task_id)
+                
+                task_record = task_result.single()
+                print(f"Test 1 - Task query: {'Success' if task_record else 'Failed'}")
+                
+                # 测试2: 查询任务部署的节点
+                node_result = session.run("""
+                    MATCH (t:任务 {任务编号: $task_id})
+                    MATCH (t)-[:部署单位]->(n:节点)
+                    RETURN count(n) as node_count
+                    """, task_id=task_id)
+                
+                node_record = node_result.single()
+                node_count = node_record['node_count'] if node_record else 0
+                print(f"Test 2 - Task nodes: {node_count}")
+
+                # 详细查看关系结构
+                relation_detail_result = session.run("""
+                    MATCH (t:任务 {任务编号: $task_id})
+                    MATCH (t)-[:部署单位]->(n1:节点)
+                    MATCH (n1)-[r:通信手段]->(n2:节点)
+                    WHERE (t)-[:部署单位]->(n2)
+                    RETURN n1.编号 as source, n2.编号 as target, type(r) as rel_type, r as rel_data
+                    LIMIT 1
+                    """, task_id=task_id)
+
+                detail_record = relation_detail_result.single()
+                if detail_record:
+                    print("\nDetailed relation structure:")
+                    print(f"Source: {detail_record['source']}")
+                    print(f"Target: {detail_record['target']}")
+                    print(f"Relation type: {detail_record['rel_type']}")
+                    print(f"Relation data: {dict(detail_record['rel_data'])}")
+                    
+                    # 检查关系的具体属性
+                    rel_data = dict(detail_record['rel_data'])
+                    print("\nRelation properties structure:")
+                    for key, value in rel_data.items():
+                        print(f"  {key}: {value} (type: {type(value).__name__})")
+                
+                # 测试3: 查询节点间的通信关系
+                if node_count > 0:
+                    relation_result = session.run("""
+                        MATCH (t:任务 {任务编号: $task_id})
+                        MATCH (t)-[:部署单位]->(n1:节点)
+                        MATCH (n1)-[r:通信手段]->(n2:节点)
+                        WHERE (t)-[:部署单位]->(n2)
+                        RETURN count(r) as rel_count
+                        """, task_id=task_id)
+                    
+                    relation_record = relation_result.single()
+                    rel_count = relation_record['rel_count'] if relation_record else 0
+                    print(f"Test 3 - Communication relations: {rel_count}")
+                    
+                    # 测试4: 如果没有找到通信关系，尝试更宽松的查询
+                    if rel_count == 0:
+                        all_rel_result = session.run("""
+                            MATCH (n1:节点)-[r:通信手段]->(n2:节点)
+                            RETURN count(r) as all_rel_count
+                            """)
+                        
+                        all_rel_record = all_rel_result.single()
+                        all_rel_count = all_rel_record['all_rel_count'] if all_rel_record else 0
+                        print(f"Test 4 - All communication relations in DB: {all_rel_count}")
+                        
+                        # 输出一些示例通信关系
+                        if all_rel_count > 0:
+                            sample_result = session.run("""
+                                MATCH (n1:节点)-[r:通信手段]->(n2:节点)
+                                RETURN n1.编号 as source, n2.编号 as target, r
+                                LIMIT 3
+                                """)
+                            
+                            print("Sample communication relations:")
+                            for record in sample_result:
+                                print(f"  {record['source']} -> {record['target']}")
+                            
+                return True
+        except Exception as e:
+            print(f"Test query error: {str(e)}")
+            return False
+    # 将以下方法添加到现有的 Neo4jHandler 类中
+
+    def get_task_data_improved(self, task_id: str):
+        """
+        改进的任务数据获取方法
+        
+        这个方法应该添加到现有的 Neo4jHandler 类中，
+        作为 get_task_data 方法的增强版本
+        """
+        try:
+            with self.driver.session() as session:
+                # 1. 获取任务基本信息
+                task_result = session.run("""
+                    MATCH (t:任务 {任务编号: $task_id})
+                    RETURN t
+                    """, task_id=task_id)
+                
+                task_record = task_result.single()
+                if not task_record:
+                    logger.warning(f"未找到任务: {task_id}")
+                    return None
+                
+                task = task_record['t']
+                
+                # 2. 获取任务部署的节点
+                node_result = session.run("""
+                    MATCH (t:任务 {任务编号: $task_id})
+                    MATCH (t)-[:部署单位]->(n:节点)
+                    RETURN n
+                    """, task_id=task_id)
+                
+                nodes = [dict(record['n']) for record in node_result]
+                
+                # 3. 获取通信关系 - 改进版本，直接获取关系属性
+                relation_result = session.run("""
+                    MATCH (t:任务 {任务编号: $task_id})
+                    MATCH (t)-[:部署单位]->(n1:节点)
+                    MATCH (n1)-[r:通信手段]->(n2:节点)
+                    WHERE (t)-[:部署单位]->(n2)
+                    RETURN r, n1.编号 as source_id, n2.编号 as target_id
+                    """, task_id=task_id)
+                
+                relationships = []
+                for record in relation_result:
+                    rel_props = dict(record['r'])
+                    rel_props['source_id'] = record['source_id']
+                    rel_props['target_id'] = record['target_id']
+                    rel_props['type'] = '通信手段'
+                    relationships.append(rel_props)
+                
+                logger.info(f"获取到 {len(relationships)} 个通信关系")
+                
+                # 4. 构建任务数据结构
+                task_data = self._build_improved_task_data_structure(task, nodes, relationships)
+                
+                return task_data
+                
+        except Exception as e:
+            logger.error(f"获取任务数据时出错: {str(e)}")
+            return None
+
+    def _build_improved_task_data_structure(self, task, nodes, relationships):
+        """
+        构建改进的任务数据结构
+        
+        这个方法应该添加到现有的 Neo4jHandler 类中
+        """
+        task_info = dict(task)
+        
+        # 构建基本任务数据结构
+        task_data = {
+            'task_info': {
+                'task_id': task_info.get('任务编号'),
+                'task_name': task_info.get('任务名称', '未知任务'),
+                'task_target': task_info.get('任务目标', ''),
+                'task_area': task_info.get('任务区域', ''),
+                'task_time': task_info.get('任务时间范围', ''),
+                'force_composition': task_info.get('兵力组成', ''),
+                'communication_plan': task_info.get('通信方案编号', '')
+            },
+            'nodes': {
+                'command_center': None,
+                'command_ship': None,
+                'combat_units': [],
+                'comm_stations': [],
+                'communication_systems': []
+            },
+            'communication_links': []
+        }
+        
+        # 处理节点分类
+        for node in nodes:
+            node_type = node.get('节点类型', '')
+            labels = node.get('labels', [])
+            
+            if node_type in ['航母', '驱逐舰', '护卫舰', '潜艇']:
+                if node_type == '航母' or (node_type == '驱逐舰' and 
+                                        not task_data['nodes']['command_ship']):
+                    task_data['nodes']['command_ship'] = node
+                task_data['nodes']['combat_units'].append(node)
+            elif '指挥所' in labels or node_type == '指挥所':
+                task_data['nodes']['command_center'] = node
+            elif '通信站' in labels or node_type == '通信站':
+                task_data['nodes']['comm_stations'].append(node)
+            elif '通信设备' in labels or node_type == '通信设备':
+                task_data['nodes']['communication_systems'].append(node)
+        
+        # 处理通信链路 - 使用改进的方法
+        for rel in relationships:
+            link = self._create_improved_communication_link(rel)
+            if link:
+                task_data['communication_links'].append(link)
+        
+        logger.info(f"构建任务数据: {len(task_data['communication_links'])} 个通信链路")
+        return task_data
+
+    def _create_improved_communication_link(self, rel_data):
+        """
+        创建改进的通信链路对象
+        
+        这个方法应该添加到现有的 Neo4jHandler 类中
+        """
+        try:
+            # 基本链路信息
+            link = {
+                'source_id': rel_data.get('source_id'),
+                'target_id': rel_data.get('target_id'),
+                'comm_type': rel_data.get('通信手段类型', '未知'),
+                'frequency_band': rel_data.get('工作频段', ''),
+                'bandwidth': self._parse_numeric_value_safe(rel_data.get('带宽大小', '0')),
+                'power': self._parse_numeric_value_safe(rel_data.get('发射功率', '0')),
+                'modulation': rel_data.get('调制方式', 'BPSK'),
+                'polarization': rel_data.get('极化方式', 'LINEAR'),
+                'snr': self._parse_numeric_value_safe(rel_data.get('预计信噪比', '15')),
+                'distance': self._parse_numeric_value_safe(rel_data.get('通信距离', '100')),
+                'network_status': rel_data.get('网络状态', '正常'),
+                'quality': rel_data.get('网络质量', '良好')
+            }
+            
+            # 解析频率范围
+            freq_min, freq_max = self._parse_frequency_band_safe(link['frequency_band'])
+            link['frequency_min'] = freq_min
+            link['frequency_max'] = freq_max
+            link['frequency'] = (freq_min + freq_max) / 2 if freq_min and freq_max else 1e9
+            
+            # 确保基本参数有效
+            if link['bandwidth'] <= 0:
+                link['bandwidth'] = 10e6  # 默认10MHz
+            if link['power'] <= 0:
+                link['power'] = 10  # 默认10W
+            if link['frequency'] <= 0:
+                link['frequency'] = 1e9  # 默认1GHz
+            
+            return link
+            
+        except Exception as e:
+            logger.error(f"创建通信链路时出错: {str(e)}")
+            return None
+
+    def _parse_frequency_band_safe(self, freq_band):
+        """
+        安全的频段解析方法
+        
+        这个方法应该添加到现有的 Neo4jHandler 类中
+        """
+        try:
+            if not freq_band or '/' not in freq_band:
+                return 1e9, 2e9  # 默认频率范围
+                    
+            parts = freq_band.split('/')
+            min_freq = self._parse_numeric_value_safe(parts[0].strip()) * 1e6  # 假设单位是MHz
+            max_freq = self._parse_numeric_value_safe(parts[1].strip()) * 1e6
+            
+            return max(min_freq, 100e6), min(max_freq, 10e9)  # 限制在合理范围内
+        except Exception:
+            return 1e9, 2e9
+
+    def _parse_numeric_value_safe(self, value_str):
+        """
+        安全的数值解析方法
+        
+        这个方法应该添加到现有的 Neo4jHandler 类中，
+        或者可以改进现有的 _parse_numeric_value 方法
+        """
+        if value_str is None:
+            return 0.0
+            
+        if isinstance(value_str, (int, float)):
+            return float(value_str)
+        
+        if isinstance(value_str, str):
+            # 移除单位并提取数字
+            import re
+            # 查找所有数字（包括小数）
+            numeric_match = re.search(r'\d+\.?\d*', value_str)
+            if numeric_match:
+                try:
+                    return float(numeric_match.group())
+                except ValueError:
+                    pass
+        
+        return 0.0
+
+    def validate_and_fix_task_data(self, task_data):
+        """
+        验证并修复任务数据
+        
+        这个方法应该添加到现有的 Neo4jHandler 类中
+        """
+        if not task_data:
+            return None, "任务数据为空"
+        
+        # 检查基本任务信息
+        task_info = task_data.get('task_info', {})
+        if not task_info.get('task_id'):
+            return None, "缺少任务ID"
+        
+        # 检查通信链路
+        comm_links = task_data.get('communication_links', [])
+        if not comm_links:
+            # 如果没有通信链路，创建默认的测试链路
+            logger.warning("没有找到通信链路，创建默认测试链路")
+            default_links = self._create_default_communication_links()
+            task_data['communication_links'] = default_links
+        
+        # 验证每个通信链路
+        valid_links = []
+        for i, link in enumerate(task_data['communication_links']):
+            if link.get('source_id') and link.get('target_id'):
+                # 确保链路有必要的参数
+                if not link.get('frequency'):
+                    link['frequency'] = 1e9 + i * 1e8  # 为不同链路分配不同频率
+                if not link.get('bandwidth'):
+                    link['bandwidth'] = 10e6 + i * 5e6
+                if not link.get('power'):
+                    link['power'] = 10 + i * 5
+                
+                valid_links.append(link)
+            else:
+                logger.warning(f"链路 {i+1} 缺少源或目标节点ID，已跳过")
+        
+        task_data['communication_links'] = valid_links
+        
+        if not valid_links:
+            return None, "没有有效的通信链路"
+        
+        return task_data, "任务数据验证通过"
+
+    def _create_default_communication_links(self):
+        """
+        创建默认的通信链路用于测试
+        
+        这个方法应该添加到现有的 Neo4jHandler 类中
+        """
+        return [
+            {
+                'source_id': 'default_node_1',
+                'target_id': 'default_node_2',
+                'comm_type': '数据链通信',
+                'frequency': 2e9,
+                'frequency_min': 1.8e9,
+                'frequency_max': 2.2e9,
+                'bandwidth': 20e6,
+                'power': 25,
+                'modulation': 'QPSK',
+                'polarization': 'LINEAR',
+                'snr': 20,
+                'distance': 50
+            },
+            {
+                'source_id': 'default_node_1',
+                'target_id': 'default_node_3',
+                'comm_type': '卫星通信',
+                'frequency': 5e9,
+                'frequency_min': 4.8e9,
+                'frequency_max': 5.2e9,
+                'bandwidth': 30e6,
+                'power': 35,
+                'modulation': 'QAM16',
+                'polarization': 'CIRCULAR',
+                'snr': 18,
+                'distance': 100
+            }
+        ]
+
+    # 使用说明：
+    # 1. 将这些方法添加到现有的 data/neo4j_handler.py 文件中的 Neo4jHandler 类里
+    # 2. 在主程序中，将 get_task_data() 调用改为 get_task_data_improved()
+    # 3. 添加数据验证调用：
+    #    task_data, msg = neo4j_handler.validate_and_fix_task_data(task_data)
+    #    if task_data is None:
+    #        logger.error(f"数据验证失败: {msg}")
+    #        return
