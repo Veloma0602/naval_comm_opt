@@ -1,0 +1,2 @@
+2025-06-09 17:52:52,283 - optimization - INFO - 日志系统初始化完成。日志文件: logs/optimization_20250609_175252.log
+2025-06-09 17:53:35,023 - optimization - ERROR - 报告内容创建失败：unsupported operand type(s) for -: 'NoneType' and 'float'

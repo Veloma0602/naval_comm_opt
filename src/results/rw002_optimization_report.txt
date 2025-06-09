@@ -1,33 +1,285 @@
 === 任务 rw002 优化结果报告 ===
 
-找到 1 个非支配解
+找到 10 个非支配解
 
 解 1:
-  加权得分: 10.8
+  加权得分: 0.25160355732265116
   目标函数值:
-    reliability: 1.0
-    spectral_efficiency: 1.0
-    energy_efficiency: 50.0
-    interference: 1.0
-    adaptability: 1.0
+    reliability: 2.8711659964572e-305
+    spectral_efficiency: 0.22250222929060476
+    energy_efficiency: 0.0030000000000000005
+    interference: 0.47385333333333335
+    adaptability: 0.8366666666666668
   参数配置:
     链路 1:
-      frequency: 5050000000.0
+      frequency: 277866791.26139367
       bandwidth: 27500000.0
       power: 27.5
       modulation: BPSK
       polarization: LINEAR
     链路 2:
+      frequency: 100000000.0
+      bandwidth: 27500000.0
+      power: 30.701452212957076
+      modulation: BPSK
+      polarization: ADAPTIVE
+    链路 3:
+      frequency: 5050000000.0
+      bandwidth: 27500000.0
+      power: 27.5
+      modulation: BPSK
+      polarization: ADAPTIVE
+
+解 2:
+  加权得分: 0.2508639284860339
+  目标函数值:
+    reliability: 2.8711659964572e-305
+    spectral_efficiency: 0.22254371394413555
+    energy_efficiency: 0.0030000000000000005
+    interference: 0.47385333333333335
+    adaptability: 0.8316666666666667
+  参数配置:
+    链路 1:
+      frequency: 439612972.0772083
+      bandwidth: 27500000.0
+      power: 27.5
+      modulation: BPSK
+      polarization: LINEAR
+    链路 2:
+      frequency: 100000000.0
+      bandwidth: 27500000.0
+      power: 30.549128806637018
+      modulation: BPSK
+      polarization: ADAPTIVE
+    链路 3:
       frequency: 5050000000.0
       bandwidth: 27500000.0
       power: 27.5
       modulation: BPSK
       polarization: DUAL
+
+解 3:
+  加权得分: 0.24960864789148507
+  目标函数值:
+    reliability: 1.0622437857764408e-48
+    spectral_efficiency: 0.2225225915659403
+    energy_efficiency: 0.0030000000000000005
+    interference: 0.5488533333333333
+    adaptability: 0.7483333333333334
+  参数配置:
+    链路 1:
+      frequency: 438626977.73239374
+      bandwidth: 27500000.0
+      power: 27.5
+      modulation: BPSK
+      polarization: LINEAR
+    链路 2:
+      frequency: 100000000.0
+      bandwidth: 27500000.0
+      power: 37.166340175356176
+      modulation: BPSK
+      polarization: LINEAR
+    链路 3:
+      frequency: 5050000000.0
+      bandwidth: 27500000.0
+      power: 27.5
+      modulation: QAM64
+      polarization: LINEAR
+
+解 4:
+  加权得分: 0.2453597321210055
+  目标函数值:
+    reliability: 6.587743731215361e-101
+    spectral_efficiency: 0.22252692848402203
+    energy_efficiency: 0.0030000000000000005
+    interference: 0.47385333333333335
+    adaptability: 0.795
+  参数配置:
+    链路 1:
+      frequency: 447698892.01327777
+      bandwidth: 27500000.0
+      power: 27.5
+      modulation: BPSK
+      polarization: LINEAR
+    链路 2:
+      frequency: 100000000.0
+      bandwidth: 27500000.0
+      power: 37.349409553746845
+      modulation: BPSK
+      polarization: ADAPTIVE
     链路 3:
       frequency: 5050000000.0
       bandwidth: 27500000.0
       power: 27.5
       modulation: QAM16
+      polarization: ADAPTIVE
+
+解 5:
+  加权得分: 0.2446078620956569
+  目标函数值:
+    reliability: 6.587743731215361e-101
+    spectral_efficiency: 0.22251944838262774
+    energy_efficiency: 0.0030000000000000005
+    interference: 0.49885333333333326
+    adaptability: 0.765
+  参数配置:
+    链路 1:
+      frequency: 273699102.6409576
+      bandwidth: 27500000.0
+      power: 27.5
+      modulation: BPSK
+      polarization: LINEAR
+    链路 2:
+      frequency: 100000000.0
+      bandwidth: 27500000.0
+      power: 30.640542334828208
+      modulation: BPSK
+      polarization: LINEAR
+    链路 3:
+      frequency: 5050000000.0
+      bandwidth: 27500000.0
+      power: 27.5
+      modulation: QAM16
+      polarization: LINEAR
+
+解 6:
+  加权得分: 0.24311017808879037
+  目标函数值:
+    reliability: 6.587743731215361e-101
+    spectral_efficiency: 0.22252871235516158
+    energy_efficiency: 0.0030000000000000005
+    interference: 0.47385333333333335
+    adaptability: 0.7799999999999999
+  参数配置:
+    链路 1:
+      frequency: 305801644.95784986
+      bandwidth: 27500000.0
+      power: 27.5
+      modulation: BPSK
+      polarization: LINEAR
+    链路 2:
+      frequency: 100000000.0
+      bandwidth: 27500000.0
+      power: 32.76485193212921
+      modulation: BPSK
+      polarization: LINEAR
+    链路 3:
+      frequency: 5050000000.0
+      bandwidth: 27500000.0
+      power: 27.5
+      modulation: QAM16
+      polarization: ADAPTIVE
+
+解 7:
+  加权得分: 0.24286065224881673
+  目标函数值:
+    reliability: 1.0622437857764408e-48
+    spectral_efficiency: 0.22253060899526697
+    energy_efficiency: 0.0030000000000000005
+    interference: 0.47385333333333335
+    adaptability: 0.7783333333333333
+  参数配置:
+    链路 1:
+      frequency: 272530873.20596206
+      bandwidth: 27500000.0
+      power: 27.5
+      modulation: BPSK
+      polarization: LINEAR
+    链路 2:
+      frequency: 100000000.0
+      bandwidth: 27500000.0
+      power: 30.63791903878495
+      modulation: BPSK
+      polarization: ADAPTIVE
+    链路 3:
+      frequency: 5050000000.0
+      bandwidth: 27500000.0
+      power: 27.5
+      modulation: QAM64
+      polarization: ADAPTIVE
+
+解 8:
+  加权得分: 0.2428590056719181
+  目标函数值:
+    reliability: 1.0622437857764408e-48
+    spectral_efficiency: 0.2225240226876724
+    energy_efficiency: 0.0030000000000000005
+    interference: 0.49885333333333326
+    adaptability: 0.7533333333333333
+  参数配置:
+    链路 1:
+      frequency: 269297103.2643424
+      bandwidth: 27500000.0
+      power: 27.5
+      modulation: BPSK
+      polarization: LINEAR
+    链路 2:
+      frequency: 100000000.0
+      bandwidth: 27500000.0
+      power: 33.496498398433665
+      modulation: BPSK
+      polarization: LINEAR
+    链路 3:
+      frequency: 5050000000.0
+      bandwidth: 27500000.0
+      power: 27.5
+      modulation: QAM64
+      polarization: CIRCULAR
+
+解 9:
+  加权得分: 0.2416140918343733
+  目标函数值:
+    reliability: 6.587743731215361e-101
+    spectral_efficiency: 0.22254436733749325
+    energy_efficiency: 0.0030000000000000005
+    interference: 0.47385333333333335
+    adaptability: 0.77
+  参数配置:
+    链路 1:
+      frequency: 305006076.50489926
+      bandwidth: 27500000.0
+      power: 27.5
+      modulation: BPSK
+      polarization: LINEAR
+    链路 2:
+      frequency: 100000000.0
+      bandwidth: 27500000.0
+      power: 36.972320955555624
+      modulation: BPSK
+      polarization: LINEAR
+    链路 3:
+      frequency: 5050000000.0
+      bandwidth: 27500000.0
+      power: 27.5
+      modulation: QAM16
+      polarization: CIRCULAR
+
+解 10:
+  加权得分: 0.23986312402788443
+  目标函数值:
+    reliability: 1.0622437857764408e-48
+    spectral_efficiency: 0.22254049611153776
+    energy_efficiency: 0.0030000000000000005
+    interference: 0.47385333333333335
+    adaptability: 0.7583333333333333
+  参数配置:
+    链路 1:
+      frequency: 388167767.0890622
+      bandwidth: 27500000.0
+      power: 27.5
+      modulation: BPSK
+      polarization: LINEAR
+    链路 2:
+      frequency: 100000000.0
+      bandwidth: 27500000.0
+      power: 33.4761945087778
+      modulation: BPSK
+      polarization: LINEAR
+    链路 3:
+      frequency: 5050000000.0
+      bandwidth: 27500000.0
+      power: 27.5
+      modulation: QAM64
       polarization: DUAL
 
 === 报告结束 ===

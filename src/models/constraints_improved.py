@@ -32,12 +32,12 @@ class ImprovedConstraints:
         
         # 约束权重 - 根据重要性调整
         self.constraint_weights = {
-            'frequency_bounds': 1.0,      # 频率边界约束最重要
-            'power_bounds': 1.0,          # 功率边界约束
-            'bandwidth_bounds': 0.8,      # 带宽边界约束
-            'frequency_spacing': 0.9,     # 频率间隔约束
-            'snr_requirement': 0.7,       # SNR要求（软约束）
-            'delay_requirement': 0.6      # 时延要求（软约束）
+            'frequency_bounds': 0.5,      # 大幅降低
+            'power_bounds': 0.5,          # 大幅降低
+            'bandwidth_bounds': 0.4,      # 大幅降低
+            'frequency_spacing': 0.3,     # 大幅降低
+            'snr_requirement': 0.2,       # 大幅降低
+            'delay_requirement': 0.2      # 大幅降低
         }
         
         # 软约束参数

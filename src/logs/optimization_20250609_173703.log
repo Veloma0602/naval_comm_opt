@@ -1,0 +1,3 @@
+2025-06-09 17:37:03,534 - optimization - INFO - 日志系统初始化完成。日志文件: logs/optimization_20250609_173703.log
+2025-06-09 17:37:04,421 - optimization.nsga2_optimizer_improved - ERROR - 传统优化过程异常：'SimpleHistoryCallback' object is not callable
+2025-06-09 17:37:05,281 - optimization - ERROR - 报告内容创建失败：unsupported operand type(s) for -: 'NoneType' and 'float'

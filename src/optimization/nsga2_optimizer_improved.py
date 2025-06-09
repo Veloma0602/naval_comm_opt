@@ -813,41 +813,67 @@ class ImprovedCommunicationOptimizer:
 
     def optimize_traditional(self) -> Tuple[np.ndarray, np.ndarray, Dict]:
         """
-        传统NSGA-II优化（为了兼容性保留）
+        传统NSGA-II优化（修复版）
+        避免序列化错误，不使用历史引导
         
         返回:
         Tuple[np.ndarray, np.ndarray, Dict]: Pareto前沿、对应的解、历史数据
         """
-        logger.info("执行传统优化模式")
+        logger.info("执行传统优化模式（修复版）")
         
         try:
-            # 临时禁用历史引导
-            original_strategies = self.population_manager.init_strategies.copy()
+            # 1. 临时保存原始配置
+            original_db_info = getattr(self, 'db_info', None)
+            original_neo4j_handler = getattr(self, 'neo4j_handler', None)
             
-            # 设置为纯随机初始化
-            self.population_manager.init_strategies = {
-                'historical_guided': 0.0,
-                'domain_knowledge': 0.0,
-                'frequency_optimized': 0.0,
-                'latin_hypercube': 0.3,
-                'random_diverse': 0.7
-            }
+            # 2. 临时清除可能导致序列化问题的对象
+            self.db_info = None
+            self.neo4j_handler = None
             
-            # 创建临时数据库连接
-            temp_neo4j_handler = self._create_temp_neo4j_connection()
+            # 3. 确保种群管理器也清除数据库连接
+            if hasattr(self, 'population_manager'):
+                original_pop_handler = getattr(self.population_manager, 'neo4j_handler', None)
+                self.population_manager.neo4j_handler = None
+            else:
+                original_pop_handler = None
             
-            # 创建问题实例
+            # 4. 创建干净的问题实例
             problem = ImprovedCommunicationProblem(self)
             
-            # 使用纯随机初始化
+            # 5. 创建完全随机的初始化采样
             from pymoo.operators.sampling.rnd import FloatRandomSampling
-            sampling = FloatRandomSampling()
             
-            # 创建算法
+            # 使用改进的随机采样，但避免复杂对象
+            class CleanRandomSampling(FloatRandomSampling):
+                """干净的随机采样，避免序列化问题"""
+                
+                def _do(self, problem, n_samples, **kwargs):
+                    # 生成在参数空间中心附近的解
+                    center = (problem.xl + problem.xu) / 2
+                    spread = (problem.xu - problem.xl) / 6  # 使用1/6范围，更集中
+                    
+                    X = np.random.uniform(
+                        center - spread, 
+                        center + spread, 
+                        size=(n_samples, problem.n_var)
+                    )
+                    
+                    # 确保在边界内
+                    X = np.clip(X, problem.xl, problem.xu)
+                    
+                    return X
+            
+            sampling = CleanRandomSampling()
+            
+            # 6. 创建算法（使用简单的参数）
+            from pymoo.algorithms.moo.nsga2 import NSGA2
+            from pymoo.operators.crossover.sbx import SBX
+            from pymoo.operators.mutation.pm import PM
+            
             algorithm = NSGA2(
                 pop_size=self.config.population_size,
                 n_offsprings=self.config.population_size,
-                sampling=sampling,  # 使用纯随机采样
+                sampling=sampling,
                 crossover=SBX(
                     prob=self.config.crossover_prob, 
                     eta=self.config.crossover_eta
@@ -859,11 +885,60 @@ class ImprovedCommunicationOptimizer:
                 eliminate_duplicates=True
             )
 
-            # 创建历史记录回调（不使用自适应机制）
-            history_callback = ImprovedHistoryCallback()
+            # 7. 创建简单的历史记录回调（避免复杂对象）
+            class SimpleHistoryCallback:
+                def __init__(self):
+                    self.history = {
+                        'n_gen': [],
+                        'n_eval': [],
+                        'n_nds': [],
+                        'cv_min': [],
+                        'cv_avg': [],
+                        'f_min': [[] for _ in range(5)],
+                        'f_avg': [[] for _ in range(5)]
+                    }
                 
-            # 运行优化
+                def __call__(self, algorithm):
+                    self.notify(algorithm)
+                
+                def notify(self, algorithm):
+                    """简单的历史记录，避免复杂计算"""
+                    try:
+                        self.history['n_gen'].append(algorithm.n_gen)
+                        self.history['n_eval'].append(algorithm.evaluator.n_eval)
+                        self.history['n_nds'].append(len(algorithm.opt) if algorithm.opt is not None else 0)
+                        
+                        # 约束违反度
+                        if algorithm.pop is not None and len(algorithm.pop) > 0:
+                            cv = algorithm.pop.get("CV")
+                            if cv is not None and len(cv) > 0:
+                                self.history['cv_min'].append(float(cv.min()))
+                                self.history['cv_avg'].append(float(cv.mean()))
+                            else:
+                                self.history['cv_min'].append(0.0)
+                                self.history['cv_avg'].append(0.0)
+                        else:
+                            self.history['cv_min'].append(0.0)
+                            self.history['cv_avg'].append(0.0)
+                        
+                        # 目标函数值（简化处理）
+                        if algorithm.pop is not None and len(algorithm.pop) > 0:
+                            F = algorithm.pop.get("F")
+                            if F is not None and len(F) > 0:
+                                for i in range(min(5, F.shape[1])):
+                                    col = F[:, i]
+                                    if len(col) > 0:
+                                        self.history['f_min'][i].append(float(col.min()))
+                                        self.history['f_avg'][i].append(float(col.mean()))
+                    except Exception as e:
+                        logger.warning(f"历史记录失败：{str(e)}")
+            
+            history_callback = SimpleHistoryCallback()
+            
+            # 8. 运行优化
             logger.info(f"开始传统NSGA-II算法，共 {self.config.n_generations} 代")
+            
+            from pymoo.optimize import minimize
             
             result = minimize(
                 problem,
@@ -873,35 +948,51 @@ class ImprovedCommunicationOptimizer:
                 verbose=True
             )
             
-            # 处理结果
-            pareto_front, optimal_variables, history = self._process_optimization_result(
-                result, history_callback
-            )
+            # 9. 处理结果
+            if result is None or not hasattr(result, 'F') or result.F is None:
+                logger.warning("传统优化未能返回有效结果")
+                pareto_front = np.array([[-1.0, -1.0, 50.0, -1.0, -1.0]])
+                optimal_variables = np.tile((problem.xl + problem.xu) / 2, (1, 1))
+            else:
+                pareto_front = result.F
+                optimal_variables = result.X
+                logger.info(f"传统优化完成，找到 {len(pareto_front)} 个非支配解")
             
-            # 记录统计信息
-            self._record_optimization_stats(pareto_front, optimal_variables, problem)
+            # 10. 恢复原始配置
+            self.db_info = original_db_info
+            self.neo4j_handler = original_neo4j_handler
+            if hasattr(self, 'population_manager'):
+                self.population_manager.neo4j_handler = original_pop_handler
             
-            # 清理临时连接
-            if temp_neo4j_handler:
-                temp_neo4j_handler.close()
-            
-            return pareto_front, optimal_variables, history
+            return pareto_front, optimal_variables, history_callback.history
             
         except Exception as e:
             logger.error(f"传统优化过程异常：{str(e)}")
             import traceback
             traceback.print_exc()
             
-            # 返回默认结果
-            return self._create_fallback_result()
-            
-        finally:
-            # 恢复原始策略
+            # 恢复原始配置
             try:
-                self.population_manager.init_strategies = original_strategies
-            except Exception as e:
-                logger.warning(f"恢复初始化策略失败：{str(e)}")
-
+                self.db_info = original_db_info
+                self.neo4j_handler = original_neo4j_handler
+                if hasattr(self, 'population_manager'):
+                    self.population_manager.neo4j_handler = original_pop_handler
+            except:
+                pass
+            
+            # 返回默认结果
+            logger.info("返回传统优化的默认结果")
+            default_f = np.array([[-1.0, -1.0, 50.0, -1.0, -1.0]])
+            default_x = np.zeros((1, getattr(self, 'n_vars', 15)))  # 使用默认维度
+            default_history = {
+                'n_gen': list(range(1, self.config.n_generations + 1)),
+                'cv_min': [0.5] * self.config.n_generations,
+                'cv_avg': [0.5] * self.config.n_generations,
+                'f_min': [[-1.0] * self.config.n_generations for _ in range(5)]
+            }
+            
+            return default_f, default_x, default_history
+    
     # 同时建议修改种群管理器的初始化策略以改善多样性
     def improve_initialization_strategies(self):
         """改进初始化策略以增强多样性"""

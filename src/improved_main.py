@@ -426,66 +426,117 @@ class ImprovedOptimizationRunner:
             raise
 
     def _run_comparison_optimization(self, optimizer) -> Dict:
-        """运行对比优化"""
+        """运行对比优化（修复版）"""
         try:
-            logger.info("执行知识引导 vs 传统NSGA-II对比")
+            logger.info("执行知识引导 vs 传统NSGA-II对比（修复版）")
             
             # 知识引导优化
             logger.info("运行知识引导NSGA-II...")
             kg_start = time.time()
-            kg_pareto, kg_variables, kg_history = optimizer.optimize()
-            kg_time = time.time() - kg_start
-            kg_results = optimizer.post_process_solutions(kg_pareto, kg_variables)
+            
+            try:
+                kg_pareto, kg_variables, kg_history = optimizer.optimize()
+                kg_time = time.time() - kg_start
+                kg_results = optimizer.post_process_solutions(kg_pareto, kg_variables)
+                kg_success = True
+            except Exception as e:
+                logger.error(f"知识引导优化失败：{str(e)}")
+                kg_time = time.time() - kg_start
+                kg_pareto = np.array([[-1.0, -1.0, 50.0, -1.0, -1.0]])
+                kg_variables = np.zeros((1, optimizer.n_vars))
+                kg_history = {'n_gen': [], 'f_min': [[] for _ in range(5)]}
+                kg_results = []
+                kg_success = False
             
             # 传统优化
             logger.info("运行传统NSGA-II...")
             trad_start = time.time()
-            trad_pareto, trad_variables, trad_history = optimizer.optimize_traditional()
-            trad_time = time.time() - trad_start
-            trad_results = optimizer.post_process_solutions(trad_pareto, trad_variables)
+            
+            try:
+                trad_pareto, trad_variables, trad_history = optimizer.optimize_traditional()
+                trad_time = time.time() - trad_start
+                trad_results = optimizer.post_process_solutions(trad_pareto, trad_variables)
+                trad_success = True
+            except Exception as e:
+                logger.error(f"传统优化失败：{str(e)}")
+                trad_time = time.time() - trad_start
+                trad_pareto = np.array([[-1.0, -1.0, 50.0, -1.0, -1.0]])
+                trad_variables = np.zeros((1, optimizer.n_vars))
+                trad_history = {'n_gen': [], 'f_min': [[] for _ in range(5)]}
+                trad_results = []
+                trad_success = False
             
             # 构建对比结果
             comparison_results = {
                 "task_id": self.args.task_id,
                 "knowledge_guided": {
                     "execution_time": kg_time,
+                    "success": kg_success,
                     "pareto_front_size": len(kg_pareto),
                     "best_weighted_objective": kg_results[0]["weighted_objective"] if kg_results else None,
                     "convergence_history": kg_history,
-                    "results": kg_results[:5]  # 只保存前5个结果
+                    "results": kg_results[:3] if kg_results else []  # 只保存前3个结果
                 },
                 "traditional": {
                     "execution_time": trad_time,
+                    "success": trad_success,
                     "pareto_front_size": len(trad_pareto),
                     "best_weighted_objective": trad_results[0]["weighted_objective"] if trad_results else None,
                     "convergence_history": trad_history,
-                    "results": trad_results[:5]
+                    "results": trad_results[:3] if trad_results else []
                 },
                 "improvement": {
-                    "time_ratio": kg_time / trad_time if trad_time > 0 else 1.0,
+                    "time_ratio": kg_time / max(trad_time, 0.001),  # 避免除零
                     "quality_improvement": 0.0,
                     "convergence_improvement": 0.0
                 }
             }
             
-            # 计算改进指标
-            if kg_results and trad_results:
-                kg_best = kg_results[0]["weighted_objective"]
-                trad_best = trad_results[0]["weighted_objective"]
-                if trad_best != 0:
-                    comparison_results["improvement"]["quality_improvement"] = \
-                        (kg_best - trad_best) / abs(trad_best) * 100
+            # 计算改进指标（安全计算）
+            if kg_results and trad_results and kg_success and trad_success:
+                try:
+                    kg_best = kg_results[0]["weighted_objective"]
+                    trad_best = trad_results[0]["weighted_objective"]
+                    if abs(trad_best) > 1e-6:  # 避免除零
+                        comparison_results["improvement"]["quality_improvement"] = \
+                            (kg_best - trad_best) / abs(trad_best) * 100
+                except Exception as e:
+                    logger.warning(f"质量改进计算失败：{str(e)}")
             
             logger.info("对比优化完成")
-            logger.info(f"知识引导：{kg_time:.2f}秒，{len(kg_pareto)}个解")
-            logger.info(f"传统方法：{trad_time:.2f}秒，{len(trad_pareto)}个解")
+            logger.info(f"知识引导：{kg_time:.2f}秒，{len(kg_pareto)}个解，成功={kg_success}")
+            logger.info(f"传统方法：{trad_time:.2f}秒，{len(trad_pareto)}个解，成功={trad_success}")
             
             return comparison_results
             
         except Exception as e:
             logger.error(f"对比优化失败：{str(e)}")
-            raise
-
+            # 返回默认的对比结果
+            return {
+                "task_id": self.args.task_id,
+                "knowledge_guided": {
+                    "execution_time": 0.0,
+                    "success": False,
+                    "pareto_front_size": 0,
+                    "best_weighted_objective": None,
+                    "convergence_history": {},
+                    "results": []
+                },
+                "traditional": {
+                    "execution_time": 0.0,
+                    "success": False,
+                    "pareto_front_size": 0,
+                    "best_weighted_objective": None,
+                    "convergence_history": {},
+                    "results": []
+                },
+                "improvement": {
+                    "time_ratio": 1.0,
+                    "quality_improvement": 0.0,
+                    "convergence_improvement": 0.0
+                }
+            }
+    
     def _post_process_results(self):
         """后处理和分析结果"""
         post_start_time = time.time()
@@ -703,6 +754,17 @@ class ImprovedOptimizationRunner:
         """添加对比结果到报告"""
         try:
             comparison = self.optimization_results['comparison']
+            # 安全获取时间值
+            kg_time = comparison.get('knowledge_guided', {}).get('execution_time', 0.0)
+            trad_time = comparison.get('traditional', {}).get('execution_time', 0.0)
+            kg_obj = comparison.get('knowledge_guided', {}).get('best_weighted_objective', 0.0)
+            trad_obj = comparison.get('traditional', {}).get('best_weighted_objective', 0.0)
+            
+            # 确保所有值都不是None
+            kg_time = kg_time if kg_time is not None else 0.0
+            trad_time = trad_time if trad_time is not None else 0.0
+            kg_obj = kg_obj if kg_obj is not None else 0.0
+            trad_obj = trad_obj if trad_obj is not None else 0.0
             
             content = f"""
 ## 方法对比结果

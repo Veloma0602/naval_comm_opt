@@ -1,0 +1,3 @@
+2025-06-09 17:47:44,961 - optimization - INFO - 日志系统初始化完成。日志文件: logs/optimization_20250609_174744.log
+2025-06-09 17:48:36,615 - optimization.nsga2_optimizer_improved - WARNING - 传统优化未能返回有效结果
+2025-06-09 17:48:37,540 - optimization - ERROR - 报告内容创建失败：unsupported operand type(s) for -: 'NoneType' and 'float'
